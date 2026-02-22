@@ -26,7 +26,7 @@ A sleek and modern Next.js web application designed to help you track your resel
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/resell_dashboard.git
+git clone https://github.com/jonashuberts/resell_dashboard.git
 cd resell_dashboard
 ```
 
