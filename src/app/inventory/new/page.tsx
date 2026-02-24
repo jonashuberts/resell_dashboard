@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase-server";
 import { Package, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { NewItemForm } from "@/components/NewItemForm";
@@ -11,6 +11,7 @@ export default async function NewItemPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const supabase = await createClient();
   const resolvedSearchParams = await searchParams;
   const queryString = new URLSearchParams(resolvedSearchParams as Record<string, string>).toString();
 

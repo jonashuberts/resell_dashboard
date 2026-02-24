@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase-server";
 import { Settings, AlertCircle } from "lucide-react";
 import { SettingsCategories } from "@/components/SettingsCategories";
 import { SettingsStatuses } from "@/components/SettingsStatuses";
@@ -9,6 +9,7 @@ import { Translate } from "@/components/Translate";
 export const revalidate = 0;
 
 export default async function SettingsPage() {
+  const supabase = await createClient();
   const { data: categories, error: catError } = await supabase
     .from("category_settings")
     .select("*")

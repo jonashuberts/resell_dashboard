@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase-server";
 import { Package, Plus } from "lucide-react";
 import { InventoryFilters } from "@/components/InventoryFilters";
 import { SellButton } from "@/components/SellButton";
@@ -12,6 +12,7 @@ export default async function InventoryPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const supabase = await createClient();
   const params = await searchParams;
   const statusFilter = (params.status as string) || "all";
   const categoryFilter = (params.category as string) || "all";

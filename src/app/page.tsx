@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase-server";
 import { ArrowUpRight, ArrowDownRight, DollarSign, Percent, PackageOpen, TrendingUp, Wallet, Truck, Clock, Trophy, Activity } from "lucide-react";
 import { DashboardChart } from "@/components/DashboardChart";
 import { TimeFilter } from "@/components/TimeFilter";
@@ -13,6 +13,7 @@ export default async function DashboardPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const supabase = await createClient();
   const params = await searchParams;
   const currentRange = (params.range as string) || "all";
   const categoryFilter = (params.category as string) || "all";

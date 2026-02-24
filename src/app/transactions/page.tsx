@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase-server";
 import { ArrowRightLeft, Search } from "lucide-react";
 import { AddGeneralExpenseButton } from "@/components/AddGeneralExpenseButton";
 import { EditTransactionDialog } from "@/components/EditTransactionDialog";
@@ -12,6 +12,7 @@ export default async function TransactionsPage({
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const supabase = await createClient();
   const params = await searchParams;
   const typeFilter = (params.type as string) || "all";
   const categoryFilter = (params.category as string) || "all";
