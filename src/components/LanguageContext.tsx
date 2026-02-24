@@ -19,6 +19,14 @@ export const translations: Translations = {
   "nav.transactions": { de: "Transaktionen", en: "Transactions" },
   "nav.settings": { de: "Einstellungen", en: "Settings" },
 
+  // Auth
+  "auth.login.title": { de: "Willkommen zurück", en: "Welcome back" },
+  "auth.login.desc": { de: "Melde dich an, um dein Dashboard zu verwalten.", en: "Log in to manage your dashboard." },
+  "auth.login.email": { de: "E-Mail Adresse", en: "Email Address" },
+  "auth.login.password": { de: "Passwort", en: "Password" },
+  "auth.login.submit": { de: "Anmelden", en: "Sign In" },
+  "auth.login.error": { de: "Login fehlgeschlagen. Bitte prüfe deine Zugangsdaten.", en: "Login failed. Please check your credentials." },
+
   // Settings Toggle UI
   "settings.language.title": { de: "Sprache", en: "Language" },
   "settings.language.desc": { de: "Wähle die Anzeigesprache des Dashboards aus.", en: "Choose the display language for the dashboard." },
