@@ -2,14 +2,17 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { LayoutDashboard, Package, ArrowRightLeft, Settings, ChevronLeft, ChevronRight } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { LayoutDashboard, Package, ArrowRightLeft, Settings, ChevronLeft, ChevronRight, LogOut } from "lucide-react";
 import { useLanguage } from "@/components/LanguageContext";
+import { createBrowserClient } from "@/lib/supabase-browser";
 
 export function Sidebar() {
   const [isOpen, setIsOpen] = useState(true);
   const pathname = usePathname();
+  const router = useRouter();
   const { t } = useLanguage();
+  const supabase = createBrowserClient();
 
   // On mount, auto-collapse on small screens
   useEffect(() => {
@@ -49,8 +52,20 @@ export function Sidebar() {
         <NavItem href="/transactions" icon={<ArrowRightLeft className="h-5 w-5 shrink-0" />} label={t("nav.transactions")} isOpen={isOpen} isActive={pathname?.startsWith("/transactions")} />
       </nav>
 
-      <div className="p-3 sm:p-4 border-t border-zinc-800 overflow-x-hidden">
+      <div className="p-3 sm:p-4 border-t border-zinc-800 overflow-x-hidden flex flex-col gap-2">
         <NavItem href="/settings" icon={<Settings className="h-5 w-5 shrink-0" />} label={t("nav.settings")} isOpen={isOpen} isActive={pathname?.startsWith("/settings")} />
+        <button
+          onClick={async () => {
+            await supabase.auth.signOut();
+            router.push("/login");
+            router.refresh();
+          }}
+          className={`flex items-center rounded-lg px-3 py-2.5 transition-colors text-zinc-400 hover:bg-rose-500/10 hover:text-rose-400 ${!isOpen ? "justify-center" : "space-x-3"}`}
+          title={!isOpen ? "Logout" : undefined}
+        >
+          <LogOut className="h-5 w-5 shrink-0" />
+          {isOpen && <span className="truncate whitespace-nowrap">Logout</span>}
+        </button>
       </div>
     </div>
   );

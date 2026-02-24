@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/Sidebar";
 import { LanguageProvider } from "@/components/LanguageContext";
+import { LayoutWrapper } from "@/components/LayoutWrapper";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,10 +21,9 @@ export default function RootLayout({
       <body className={`${inter.className} bg-zinc-950 text-zinc-100 antialiased`}>
         <LanguageProvider>
           <div className="flex h-screen overflow-hidden">
-            <Sidebar />
-            <main className="flex-1 overflow-y-auto bg-zinc-900/50">
+            <LayoutWrapper>
               {children}
-            </main>
+            </LayoutWrapper>
           </div>
         </LanguageProvider>
       </body>
