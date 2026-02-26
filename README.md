@@ -2,16 +2,16 @@
 
 ![Dashboard Mockup](./docs/mockup.png)
 
-A sleek and modern Next.js web application designed to help you track your reselling business. Easily manage your inventory, record sales and repaires, and monitor your cashflow with dynamic charts.
+A sleek and modern Next.js web application designed to help you track your reselling business across platforms like **eBay**, **Vinted**, and **Kleinanzeigen**. Easily manage your inventory, record sales and repairs, and monitor your cashflow with dynamic charts.
 
 ## Features
 
-- **Inventory Management**: Keep track of purchased items, their status (e.g., In Stock, In Repair, Sold), and platforms.
-- **Transaction Tracking**: Log all expenses and income, including spare parts, shipping fees, to automatically calculate your exact profit margins.
+- **Inventory Management**: Keep track of purchased items, their status (e.g., In Stock, In Repair, Sold), and your active listings on platforms like eBay or Vinted.
+- **Transaction Tracking**: Log all expenses and income, including spare parts or shipping fees, to automatically calculate your exact profit margins.
 - **Dynamic Dashboard**: Beautiful KPI cards and Recharts integration to visualize your spending and revenue over time.
 - **Localization**: Full bilingual support (English and German) with language persistence.
 - **Customizable Settings**: Add custom colored categories and custom status labels directly from the UI.
-- **Built-in Backups**: Export your entire database to CSV with a single click.
+- **Built-in Backups**: Export your entire database (transactions and inventory) to CSV with a single click.
 
 ## Tech Stack
 
@@ -67,7 +67,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## License
 
-This project is licensed under the **Creative Commons Attribution-NonCommercial 4.0 International (CC BY-NC 4.0) License**. 
-This means you are free to use, modify, and distribute the code for **personal or educational purposes**, provided you give appropriate **credit** (attribution). However, you **may not use the material for commercial purposes**.
+This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**. 
+This means you are free to use, modify, and distribute the code for **personal, educational, or commercial purposes**. However, if you modify the software and make it available over a network (like running it as a service), you *must* also share your modified source code under the same AGPL-3.0 license.
 
-See the [LICENSE](LICENSE) file for more details.
+See the [LICENSE](LICENSE) file for the full legal text.
