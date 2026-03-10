@@ -181,6 +181,10 @@ export const translations: Translations = {
   "tx.table.empty": { de: "Keine Transaktionen gefunden.", en: "No transactions found." },
   "tx.filter.search": { de: "Suchen...", en: "Search..." },
   "tx.filter.type.all": { de: "Alle Typen", en: "All Types" },
+  "tx.type.buy": { de: "Einkauf", en: "Purchase" },
+  "tx.type.sell": { de: "Verkauf", en: "Sale" },
+  "tx.type.repair": { de: "Reparaturkosten", en: "Repair Costs" },
+  "tx.type.other": { de: "Werkzeuge/Sonstiges", en: "Tools/Other" },
 
   "tx.add.error": { de: "Fehler beim Hinzufügen. Wenn du Kategorien nutzt, musst du erst in Supabase die Spalte 'category' hinzufügen.", en: "Error adding. If using categories, make sure to add the 'category' column in Supabase first." },
   "tx.add.btn": { de: "Allgemeine Ausgabe", en: "General Expense" },
