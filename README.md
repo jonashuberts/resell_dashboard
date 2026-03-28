@@ -65,6 +65,17 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Deployment (Vercel)
+
+The easiest way to deploy your Resell Dashboard is to use the [Vercel Platform](https://vercel.com/new).
+
+1. Push your code to a GitHub repository.
+2. Go to Vercel and import your repository.
+3. **CRITICAL:** Before hitting deploy, or if you get a `500 Internal Server Error`, you must add your Supabase Environment Variables to Vercel!
+   - Navigate to **Settings > Environment Variables** in your Vercel project.
+   - Add `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` with the same values from your local `.env.local` file.
+4. Hit **Deploy** or trigger a **Redeploy** if you added the variables after a failed attempt.
+
 ## License
 
 This project is licensed under the **GNU Affero General Public License v3.0 (AGPL-3.0)**. 
