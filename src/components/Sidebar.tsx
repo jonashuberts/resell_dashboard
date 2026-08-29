@@ -24,9 +24,9 @@ export function Sidebar() {
   const { t } = useLanguage();
   const supabase = createBrowserClient();
 
-  // On mount, auto-collapse on small screens
+  // On mount, auto-collapse on small mobile screens
   useEffect(() => {
-    if (window.innerWidth < 1024) {
+    if (window.innerWidth < 768) {
       setIsOpen(false);
     }
   }, []);
