@@ -245,7 +245,7 @@ export const translations: Translations = {
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, string | number>) => string;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -268,12 +268,18 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem("resell_language", lang);
   };
 
-  const t = (key: string): string => {
+  const t = (key: string, params?: Record<string, string | number>): string => {
     if (!translations[key]) {
       console.warn(`Translation key not found: ${key}`);
       return key;
     }
-    return translations[key][language] || key;
+    let text = translations[key][language] || key;
+    if (params) {
+      Object.entries(params).forEach(([paramKey, val]) => {
+        text = text.replace(new RegExp(`\\{\\{${paramKey}\\}\\}`, 'g'), String(val));
+      });
+    }
+    return text;
   };
 
   // Prevent hydration mismatch by not rendering until we have loaded the value from localStorage
