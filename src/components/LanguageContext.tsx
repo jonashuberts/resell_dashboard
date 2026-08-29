@@ -26,6 +26,9 @@ export const translations: Translations = {
   "auth.login.password": { de: "Passwort", en: "Password" },
   "auth.login.submit": { de: "Anmelden", en: "Sign In" },
   "auth.login.error": { de: "Login fehlgeschlagen. Bitte prüfe deine Zugangsdaten.", en: "Login failed. Please check your credentials." },
+  "auth.login.error.invalid": { de: "Ungültige E-Mail-Adresse oder falsches Passwort.", en: "Invalid email address or wrong password." },
+  "auth.login.error.unreachable": { de: "Supabase konnte nicht erreicht werden. Dein Projekt ist möglicherweise im Pause-Modus (Free-Tier Inaktivität).", en: "Could not connect to Supabase. Your project might be paused due to free-tier inactivity." },
+  "auth.login.error.unpause": { de: "Supabase Dashboard öffnen & reaktivieren", en: "Open Supabase Dashboard & Unpause" },
 
   // Settings Toggle UI
   "settings.language.title": { de: "Sprache", en: "Language" },

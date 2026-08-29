@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase-browser";
-import { Mail, Lock, Loader2, AlertCircle } from "lucide-react";
+import { Mail, Lock, Loader2, AlertCircle, ExternalLink, RefreshCw } from "lucide-react";
 import { motion } from "motion/react";
 import { useLanguage } from "./LanguageContext";
 
@@ -15,7 +15,28 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ message: string; isUnreachable?: boolean } | null>(null);
+
+  const isNetworkOrPausedError = (err: any): boolean => {
+    if (!err) return false;
+    const msg = String(err.message || err.error_description || "").toLowerCase();
+    const name = String(err.name || "").toLowerCase();
+    const status = err.status;
+
+    return (
+      msg.includes("fetch") ||
+      msg.includes("failed to fetch") ||
+      msg.includes("network") ||
+      msg.includes("enotfound") ||
+      msg.includes("503") ||
+      msg.includes("service unavailable") ||
+      msg.includes("timeout") ||
+      msg.includes("getaddrinfo") ||
+      name.includes("authretryablefetcherror") ||
+      status === 0 ||
+      status === 503
+    );
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,20 +44,39 @@ export function LoginForm() {
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) {
-        throw error;
+      if (authError) {
+        throw authError;
       }
 
       router.push("/");
       router.refresh();
     } catch (err: any) {
-      console.error(err);
-      setError(err.message || t("auth.login.error"));
+      console.error("Login attempt error:", err);
+
+      if (isNetworkOrPausedError(err)) {
+        setError({
+          message: t("auth.login.error.unreachable"),
+          isUnreachable: true,
+        });
+      } else if (
+        err.message?.includes("Invalid login credentials") ||
+        err.message?.includes("invalid_grant")
+      ) {
+        setError({
+          message: t("auth.login.error.invalid"),
+          isUnreachable: false,
+        });
+      } else {
+        setError({
+          message: err.message || t("auth.login.error"),
+          isUnreachable: false,
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -45,10 +85,34 @@ export function LoginForm() {
   return (
     <form onSubmit={handleLogin} className="space-y-4">
       {error && (
-        <div className="bg-rose-500/10 border border-rose-500/25 text-rose-400 p-3 rounded-xl text-xs flex items-start gap-2">
-          <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
-          <span>{error}</span>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`border p-3.5 rounded-xl text-xs space-y-2 ${
+            error.isUnreachable
+              ? "bg-amber-500/10 border-amber-500/25 text-amber-300"
+              : "bg-rose-500/10 border-rose-500/25 text-rose-400"
+          }`}
+        >
+          <div className="flex items-start gap-2.5">
+            <AlertCircle className={`w-4 h-4 mt-0.5 shrink-0 ${error.isUnreachable ? "text-amber-400" : "text-rose-400"}`} />
+            <span className="leading-relaxed">{error.message}</span>
+          </div>
+
+          {error.isUnreachable && (
+            <div className="pt-1.5 border-t border-amber-500/20 flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
+              <a
+                href="https://supabase.com/dashboard"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-amber-200 hover:text-white underline underline-offset-4 transition-colors"
+              >
+                <span>{t("auth.login.error.unpause")}</span>
+                <ExternalLink className="w-3 h-3" />
+              </a>
+            </div>
+          )}
+        </motion.div>
       )}
 
       <div className="space-y-1.5">
