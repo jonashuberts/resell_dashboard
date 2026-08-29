@@ -2,21 +2,28 @@
 
 ![Dashboard Mockup](./docs/mockup.png)
 
-A sleek and modern Next.js web application designed to help you track your reselling business across platforms like **eBay**, **Vinted**, and **Kleinanzeigen**. Easily manage your inventory, record sales and repairs, and monitor your cashflow with dynamic charts.
+A sleek, fluid, Apple Design-inspired Next.js web application designed to help you track your reselling business across platforms like **eBay**, **Vinted**, and **Kleinanzeigen**. Easily manage your inventory, record sales and repairs, and monitor your cashflow with dynamic charts and zero-latency filtering.
+
+> 🚀 **Live Demo**: You can test the application live right away without needing any credentials! On the login page, simply click **"Live-Demo ausprobieren (ohne Login) / Try Live Demo"** to explore the dashboard with interactive sample data.
+
+---
 
 ## Features
 
+- **Apple Design & Fluid Interface**: Frosted glass materials (`backdrop-blur`), physics-based spring animations, macOS translucent sidebar with sliding indicators, and tactile feedback.
+- **Zero-Latency In-Memory Filtering**: Instant search and category/status filtering in `< 1ms` directly on the client.
 - **Inventory Management**: Keep track of purchased items, their status (e.g., In Stock, In Repair, Sold), and your active listings on platforms like eBay or Vinted.
 - **Transaction Tracking**: Log all expenses and income, including spare parts or shipping fees, to automatically calculate your exact profit margins.
-- **Dynamic Dashboard**: Beautiful KPI cards and Recharts integration to visualize your spending and revenue over time.
-- **Localization**: Full bilingual support (English and German) with language persistence.
+- **Dynamic Dashboard**: Modular Apple Health/Stocks-style KPI widgets and Recharts integration to visualize cashflow, top categories, ROI, and average days to sell.
+- **Bilingual Localization**: Full bilingual support (English 🇬🇧 and German 🇩🇪) with instant switching and persistence.
 - **Customizable Settings**: Add custom colored categories and custom status labels directly from the UI.
 - **Built-in Backups**: Export your entire database (transactions and inventory) to CSV with a single click.
 
 ## Tech Stack
 
-- [Next.js](https://nextjs.org/) (App Router, React Server Components)
-- [Tailwind CSS](https://tailwindcss.com/) for styling
+- [Next.js](https://nextjs.org/) (App Router, Turbopack, React Server Components)
+- [Tailwind CSS](https://tailwindcss.com/) for modern styling
+- [Motion](https://motion.dev/) (Framer Motion) for Apple-grade fluid spring animations
 - [Supabase](https://supabase.com/) for PostgreSQL database and backend API
 - [Recharts](https://recharts.org/) for data visualization
 - [Lucide React](https://lucide.dev/) for iconography

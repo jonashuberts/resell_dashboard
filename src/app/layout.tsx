@@ -6,6 +6,10 @@ import { LayoutWrapper } from "@/components/LayoutWrapper";
 export const metadata: Metadata = {
   title: "Resell Dashboard",
   description: "Modern dashboard to track reselling inventory and finances.",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

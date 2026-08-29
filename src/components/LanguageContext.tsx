@@ -32,6 +32,11 @@ export const translations: Translations = {
   "auth.login.error.invalid": { de: "Ungültige E-Mail-Adresse oder falsches Passwort.", en: "Invalid email address or wrong password." },
   "auth.login.error.unreachable": { de: "Supabase konnte nicht erreicht werden. Dein Projekt ist möglicherweise im Pause-Modus (Free-Tier Inaktivität).", en: "Could not connect to Supabase. Your project might be paused due to free-tier inactivity." },
   "auth.login.error.unpause": { de: "Supabase Dashboard öffnen & reaktivieren", en: "Open Supabase Dashboard & Unpause" },
+  "auth.login.demo.btn": { de: "Live-Demo ausprobieren (ohne Login)", en: "Try Live Demo (No login needed)" },
+  "auth.login.demo.desc": { de: "Sofortiger Zugriff mit realistischen Beispieldaten.", en: "Instant access with realistic sample data." },
+  "demo.banner.title": { de: "Demo-Modus aktiv", en: "Demo Mode Active" },
+  "demo.banner.desc": { de: "Du siehst Beispieldaten. Alle Filter & Features sind interaktiv.", en: "You are viewing sample data. All filters & features are interactive." },
+  "demo.banner.exit": { de: "Demo beenden", en: "Exit Demo" },
 
   // Settings Toggle UI
   "settings.language.title": { de: "Sprache", en: "Language" },

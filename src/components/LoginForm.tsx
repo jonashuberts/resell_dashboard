@@ -157,6 +157,28 @@ export function LoginForm() {
           t("auth.login.submit")
         )}
       </motion.button>
+
+      <div className="relative pt-3 pb-1 flex items-center justify-center">
+        <div className="border-t border-white/[0.08] w-full" />
+        <span className="bg-zinc-950 px-2.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider">
+          {t("settings.language.de") === "Deutsch" ? "Oder" : "Or"}
+        </span>
+        <div className="border-t border-white/[0.08] w-full" />
+      </div>
+
+      <motion.button
+        whileTap={{ scale: 0.97 }}
+        type="button"
+        onClick={() => {
+          document.cookie = "resell_demo=true; path=/; max-age=86400";
+          router.push("/");
+          router.refresh();
+        }}
+        className="apple-button-secondary w-full text-zinc-200 hover:text-white font-medium py-2.5 rounded-xl text-xs flex items-center justify-center gap-2"
+      >
+        <span className="flex h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+        <span>{t("auth.login.demo.btn")}</span>
+      </motion.button>
     </form>
   );
 }

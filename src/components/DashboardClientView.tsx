@@ -47,11 +47,13 @@ export function DashboardClientView({
   items,
   categories,
   stockTxs,
+  isDemo,
 }: {
   transactions: Transaction[];
   items: Item[];
   categories: string[];
   stockTxs: { item_id: string | null; amount: number }[];
+  isDemo?: boolean;
 }) {
   const { t } = useLanguage();
   const [timeRange, setTimeRange] = useState("all");
@@ -211,6 +213,27 @@ export function DashboardClientView({
 
   return (
     <div className="p-6 sm:p-10 max-w-7xl mx-auto space-y-8">
+      {isDemo && (
+        <div className="apple-card p-3.5 sm:p-4 border-blue-500/30 bg-blue-500/10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-3">
+            <span className="flex h-2.5 w-2.5 rounded-full bg-blue-400 animate-pulse shadow-[0_0_8px_rgba(96,165,250,0.8)]" />
+            <div>
+              <span className="text-xs font-semibold text-white">{t("demo.banner.title")}: </span>
+              <span className="text-xs text-zinc-300">{t("demo.banner.desc")}</span>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              document.cookie = "resell_demo=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+              window.location.href = "/login";
+            }}
+            className="text-xs font-medium text-blue-300 hover:text-white underline underline-offset-4 shrink-0 transition-colors"
+          >
+            {t("demo.banner.exit")}
+          </button>
+        </div>
+      )}
+
       {/* Header bar with Apple typography & Instant Segmented controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/[0.06]">
         <div>

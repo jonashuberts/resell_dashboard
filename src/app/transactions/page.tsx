@@ -1,12 +1,41 @@
 import { createClient } from "@/lib/supabase-server";
+import { cookies } from "next/headers";
 import { ArrowRightLeft } from "lucide-react";
 import { AddGeneralExpenseButton } from "@/components/AddGeneralExpenseButton";
 import { TransactionsClientTable } from "@/components/TransactionsClientTable";
 import { Translate } from "@/components/Translate";
+import { DEMO_CATEGORIES, DEMO_TRANSACTIONS } from "@/lib/demo-data";
 
 export const revalidate = 0;
 
 export default async function TransactionsPage() {
+  const cookieStore = await cookies();
+  const isDemo = cookieStore.get("resell_demo")?.value === "true";
+
+  if (isDemo) {
+    const categories = DEMO_CATEGORIES.map((c) => c.name).sort();
+    return (
+      <div className="p-6 sm:p-10 max-w-7xl mx-auto space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/[0.06]">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
+              <ArrowRightLeft className="h-7 w-7 text-violet-400" />
+              <Translate tKey="tx.title" />
+            </h1>
+            <p className="text-xs sm:text-sm text-zinc-400 mt-1 font-normal tracking-tight">
+              <Translate tKey="tx.desc" />
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <AddGeneralExpenseButton categories={categories} />
+          </div>
+        </div>
+
+        <TransactionsClientTable transactions={DEMO_TRANSACTIONS} categories={categories} />
+      </div>
+    );
+  }
+
   const supabase = await createClient();
 
   // 1. Fetch categories and transactions in parallel

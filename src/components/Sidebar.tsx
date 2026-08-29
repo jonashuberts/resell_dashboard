@@ -112,6 +112,7 @@ export function Sidebar() {
           whileHover={{ x: 2 }}
           whileTap={{ scale: 0.97 }}
           onClick={async () => {
+            document.cookie = "resell_demo=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
             await supabase.auth.signOut();
             router.push("/login");
             router.refresh();

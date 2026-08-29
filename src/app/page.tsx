@@ -1,9 +1,32 @@
 import { createClient } from "@/lib/supabase-server";
+import { cookies } from "next/headers";
 import { DashboardClientView } from "@/components/DashboardClientView";
+import { DEMO_CATEGORIES, DEMO_ITEMS, DEMO_TRANSACTIONS } from "@/lib/demo-data";
 
 export const revalidate = 0;
 
 export default async function DashboardPage() {
+  const cookieStore = await cookies();
+  const isDemo = cookieStore.get("resell_demo")?.value === "true";
+
+  if (isDemo) {
+    const demoCategories = DEMO_CATEGORIES.map((c) => c.name);
+    const demoStockTxs = DEMO_TRANSACTIONS.filter((t) => t.type === "Einkauf").map((t) => ({
+      item_id: t.item_id,
+      amount: t.amount,
+    }));
+
+    return (
+      <DashboardClientView
+        transactions={DEMO_TRANSACTIONS}
+        items={DEMO_ITEMS}
+        categories={demoCategories}
+        stockTxs={demoStockTxs}
+        isDemo={true}
+      />
+    );
+  }
+
   const supabase = await createClient();
 
   // Fetch all base data in parallel for maximum speed

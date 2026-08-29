@@ -36,8 +36,11 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getSession()
   const user = session?.user
 
+  const isDemo = request.cookies.get('resell_demo')?.value === 'true'
+
   if (
     !user &&
+    !isDemo &&
     !request.nextUrl.pathname.startsWith('/login') &&
     !request.nextUrl.pathname.startsWith('/auth')
   ) {
@@ -47,8 +50,8 @@ export async function updateSession(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
-  // If user is logged in and tries to access /login, redirect to dashboard
-  if (user && request.nextUrl.pathname.startsWith('/login')) {
+  // If user is logged in or in demo mode and tries to access /login, redirect to dashboard
+  if ((user || isDemo) && request.nextUrl.pathname.startsWith('/login')) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)

@@ -1,12 +1,57 @@
 import { createClient } from "@/lib/supabase-server";
+import { cookies } from "next/headers";
 import { Package, Plus } from "lucide-react";
 import { InventoryClientTable } from "@/components/InventoryClientTable";
 import { Translate } from "@/components/Translate";
+import { DEMO_CATEGORIES, DEMO_STATUSES, DEMO_ITEMS } from "@/lib/demo-data";
 import Link from "next/link";
 
 export const revalidate = 0;
 
 export default async function InventoryPage() {
+  const cookieStore = await cookies();
+  const isDemo = cookieStore.get("resell_demo")?.value === "true";
+
+  if (isDemo) {
+    const categories = DEMO_CATEGORIES.map((c) => c.name).sort();
+    const statuses = DEMO_STATUSES.map((s) => s.name).sort();
+    const catColorMap = Object.fromEntries(DEMO_CATEGORIES.map((c) => [c.name, c.color]));
+    const statColorMap = Object.fromEntries(DEMO_STATUSES.map((s) => [s.name, s.color]));
+
+    return (
+      <div className="p-6 sm:p-10 max-w-7xl mx-auto space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/[0.06]">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
+              <Package className="h-7 w-7 text-blue-500" />
+              <Translate tKey="inventory.title" />
+            </h1>
+            <p className="text-xs sm:text-sm text-zinc-400 mt-1 font-normal tracking-tight">
+              <Translate tKey="inventory.desc" />
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/inventory/new"
+              className="apple-button-primary text-white px-4 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              <Translate tKey="inventory.newItem" />
+            </Link>
+          </div>
+        </div>
+
+        <InventoryClientTable
+          items={DEMO_ITEMS}
+          categories={categories}
+          statuses={statuses}
+          catColorMap={catColorMap}
+          statColorMap={statColorMap}
+        />
+      </div>
+    );
+  }
+
   const supabase = await createClient();
 
   // 1. Fetch settings and items in parallel for maximum speed
