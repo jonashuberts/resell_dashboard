@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { Loader2, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2, Check, X, Activity } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { motion } from "motion/react";
 import { useLanguage } from "./LanguageContext";
 import { ColorPicker, ColorOption } from "./ColorPicker";
 
@@ -79,16 +80,13 @@ export function SettingsStatuses({ initialStatuses }: { initialStatuses: StatusS
     const oldStat = statuses.find(s => s.name === oldName);
     if (!oldStat) return;
 
-    // 1. Insert new status
     const { error: insertError } = await supabase.from('status_settings').insert({
       name: editingValue,
       color: oldStat.color
     });
 
     if (!insertError) {
-      // 2. Update existing items
       await supabase.from('items').update({ status: editingValue }).eq('status', oldName);
-      // 3. Delete old status
       await supabase.from('status_settings').delete().eq('name', oldName);
       
       setStatuses(statuses.map(s => s.name === oldName ? { ...s, name: editingValue } : s));
@@ -117,15 +115,22 @@ export function SettingsStatuses({ initialStatuses }: { initialStatuses: StatusS
   }
 
   return (
-    <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-6 shadow-sm">
-      <h3 className="text-lg font-medium text-white mb-4">{t("settings.stat.title")}</h3>
-      <p className="text-sm text-zinc-400 mb-6">
+    <div className="apple-card p-6 sm:p-7 relative overflow-hidden shadow-xl">
+      <div className="apple-card-glow" />
+      <div className="flex items-center gap-3 mb-2">
+        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400">
+          <Activity className="h-4 w-4" />
+        </div>
+        <h3 className="text-base font-semibold text-white tracking-tight">{t("settings.stat.title")}</h3>
+      </div>
+      <p className="text-xs text-zinc-400 mb-5 font-normal">
         {t("settings.stat.desc")}
       </p>
 
-      <div className="space-y-3 mb-6">
+      {/* Status List */}
+      <div className="space-y-2.5 mb-6">
         {statuses.map((stat) => (
-          <div key={stat.name} className="flex items-center justify-between p-3 bg-zinc-900 border border-zinc-800 rounded-lg">
+          <div key={stat.name} className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/40 border border-white/[0.04] hover:bg-zinc-900/70 transition-colors">
             <div className="flex items-center gap-3">
               {editingStatusName === stat.name ? (
                 <div className="flex items-center gap-2">
@@ -133,7 +138,7 @@ export function SettingsStatuses({ initialStatuses }: { initialStatuses: StatusS
                     type="text"
                     value={editingValue}
                     onChange={(e) => setEditingValue(e.target.value)}
-                    className="bg-zinc-950 border border-zinc-700 rounded px-2 py-1 text-xs text-zinc-100 focus:outline-none focus:border-blue-500 w-[120px]"
+                    className="bg-zinc-950 border border-white/[0.15] rounded-lg px-2.5 py-1 text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/40 w-[130px]"
                     autoFocus
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') handleRename(stat.name);
@@ -141,21 +146,21 @@ export function SettingsStatuses({ initialStatuses }: { initialStatuses: StatusS
                     }}
                   />
                   <button 
-                  onClick={() => handleRename(stat.name)}
-                    className="text-emerald-400 hover:text-emerald-300"
+                    onClick={() => handleRename(stat.name)}
+                    className="text-emerald-400 hover:text-emerald-300 p-1"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    <Check className="h-3.5 w-3.5" />
                   </button>
                   <button 
                     onClick={() => setEditingStatusName(null)}
-                    className="text-zinc-500 hover:text-zinc-400"
+                    className="text-zinc-500 hover:text-zinc-400 p-1"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    <X className="h-3.5 w-3.5" />
                   </button>
                 </div>
               ) : (
                 <span 
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${!["Auf Lager", "Verkauft"].includes(stat.name) ? "cursor-pointer hover:opacity-80" : ""} ${stat.color}`}
+                  className={`inline-flex items-center px-3 py-1 rounded-lg text-xs font-medium ${!["Auf Lager", "Verkauft"].includes(stat.name) ? "cursor-pointer hover:opacity-80" : ""} ${stat.color} shadow-sm`}
                   onClick={() => {
                     if (!["Auf Lager", "Verkauft"].includes(stat.name)) {
                       setEditingStatusName(stat.name);
@@ -168,10 +173,10 @@ export function SettingsStatuses({ initialStatuses }: { initialStatuses: StatusS
                 </span>
               )}
               {["Auf Lager", "Verkauft"].includes(stat.name) && (
-                <span className="text-xs text-zinc-600">{t("settings.stat.system")}</span>
+                <span className="text-[11px] text-zinc-500 font-medium">{t("settings.stat.system")}</span>
               )}
 
-              <div className="ml-4">
+              <div className="ml-2">
                 {!["Auf Lager", "Verkauft"].includes(stat.name) && (
                   <ColorPicker 
                     colors={colors}
@@ -186,39 +191,43 @@ export function SettingsStatuses({ initialStatuses }: { initialStatuses: StatusS
               <button 
                 onClick={() => handleDelete(stat.name)}
                 disabled={isSaving}
-                className="text-zinc-500 hover:text-rose-400 transition-colors"
+                className="text-zinc-500 hover:text-rose-400 p-1.5 rounded-lg hover:bg-white/[0.06] transition-colors ml-2"
+                title={t("settings.cat.deleteHint")}
               >
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3.5 w-3.5" />
               </button>
             )}
           </div>
         ))}
       </div>
 
-      <form onSubmit={handleAdd} className="flex flex-col gap-4 pt-4 border-t border-zinc-800 mt-2">
-        <div className="flex items-start gap-4">
-          <div className="flex-1 space-y-2">
-            <label className="text-xs font-medium text-zinc-400">{t("settings.stat.newName")}</label>
+      {/* Add Status Form */}
+      <form onSubmit={handleAdd} className="space-y-4 pt-4 border-t border-white/[0.08]">
+        <div className="flex gap-3 items-end">
+          <div className="flex-1 space-y-1.5">
+            <label className="text-xs font-medium text-zinc-300">{t("settings.stat.newName")}</label>
             <input 
               type="text" 
               value={newStatusName}
               onChange={e => setNewStatusName(e.target.value)}
               placeholder={t("settings.stat.placeholder")}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
             />
           </div>
           
-          <button 
+          <motion.button 
+            whileTap={{ scale: 0.97 }}
             type="submit"
             disabled={!newStatusName || isSaving}
-            className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors h-[38px] flex items-center justify-center min-w-[100px] mt-[26px]"
+            className="apple-button-primary text-white px-4 py-2.5 rounded-xl text-xs font-medium flex items-center justify-center gap-1.5 h-[38px] disabled:opacity-50"
           >
-            {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : t("settings.addBtn")}
-          </button>
+            {isSaving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+            {t("settings.addBtn")}
+          </motion.button>
         </div>
 
-        <div className="space-y-2">
-          <label className="text-xs font-medium text-zinc-400">{t("settings.stat.color")}</label>
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium text-zinc-300">{t("settings.stat.color")}</label>
           <ColorPicker 
             colors={colors}
             value={newStatusColor}

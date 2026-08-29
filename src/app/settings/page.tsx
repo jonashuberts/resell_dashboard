@@ -22,24 +22,27 @@ export default async function SettingsPage() {
   const needsSetup = !!(catError || statError);
 
   return (
-    <div className="p-8 max-w-5xl mx-auto">
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-          <Settings className="h-8 w-8 text-zinc-400" />
+    <div className="p-6 sm:p-10 max-w-5xl mx-auto space-y-8">
+      {/* Header bar */}
+      <div className="pb-2 border-b border-white/[0.06]">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
+          <Settings className="h-7 w-7 text-zinc-400" />
           <Translate tKey="settings.title" />
-        </h2>
-        <p className="text-zinc-400 mt-1"><Translate tKey="settings.desc" /></p>
+        </h1>
+        <p className="text-xs sm:text-sm text-zinc-400 mt-1 font-normal tracking-tight">
+          <Translate tKey="settings.desc" />
+        </p>
       </div>
 
       {needsSetup ? (
-        <div className="rounded-xl border border-rose-500/50 bg-rose-500/10 p-6 flex items-start gap-4">
-          <AlertCircle className="h-6 w-6 text-rose-400 mt-0.5" />
+        <div className="apple-card p-6 border-rose-500/30 bg-rose-500/10 flex items-start gap-4">
+          <AlertCircle className="h-5 w-5 text-rose-400 mt-0.5 shrink-0" />
           <div>
-            <h3 className="text-lg font-medium text-rose-400 mb-2"><Translate tKey="settings.db.title" /></h3>
-            <p className="text-zinc-300 mb-4">
+            <h3 className="text-sm font-semibold text-rose-400 mb-1.5"><Translate tKey="settings.db.title" /></h3>
+            <p className="text-xs text-zinc-300 mb-4">
               <Translate tKey="settings.db.desc" />
             </p>
-            <pre className="bg-zinc-950 p-4 rounded-lg text-sm text-zinc-300 font-mono overflow-x-auto whitespace-pre-wrap border border-zinc-800">
+            <pre className="bg-zinc-950 p-4 rounded-xl text-xs text-zinc-300 font-mono overflow-x-auto whitespace-pre-wrap border border-white/[0.08]">
               {`-- 1. Create table for category settings
 CREATE TABLE category_settings (
     name TEXT PRIMARY KEY,
@@ -53,34 +56,30 @@ CREATE TABLE status_settings (
     color TEXT DEFAULT 'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20'
 );
 
--- 3. Pre-fill categories from existing items so we don't start empty
+-- 3. Pre-fill categories from existing items
 INSERT INTO category_settings (name)
 SELECT DISTINCT category FROM items ON CONFLICT DO NOTHING;
 
--- 4. Pre-fill default statuses with their existing colors
+-- 4. Pre-fill default statuses
 INSERT INTO status_settings (name, color) VALUES 
 ('Auf Lager', 'bg-blue-500/10 text-blue-400 border border-blue-500/20'),
 ('Verkauft', 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'),
 ('In Reparatur', 'bg-amber-500/10 text-amber-400 border border-amber-500/20')
 ON CONFLICT DO NOTHING;`}
             </pre>
-            <p className="mt-4 text-sm text-zinc-400 italic"><Translate tKey="settings.db.hint" /></p>
+            <p className="mt-3 text-[11px] text-zinc-400 italic"><Translate tKey="settings.db.hint" /></p>
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-8">
-          <div className="grid gap-8 md:grid-cols-2 items-start">
-            <LanguageSettings />
-          </div>
+        <div className="space-y-6">
+          <LanguageSettings />
           
-          <div className="grid gap-8 md:grid-cols-2 items-start">
+          <div className="grid gap-6 md:grid-cols-2 items-start">
             <SettingsCategories initialCategories={categories || []} />
             <SettingsStatuses initialStatuses={statuses || []} />
           </div>
 
-          <div className="grid gap-8 md:grid-cols-2 items-start">
-            <DataExportSettings />
-          </div>
+          <DataExportSettings />
         </div>
       )}
     </div>

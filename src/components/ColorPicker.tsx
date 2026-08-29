@@ -2,6 +2,7 @@
 
 import { Check, ChevronDown } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
 
 export type ColorOption = {
   label: string;
@@ -34,47 +35,58 @@ export function ColorPicker({ colors, value, onChange, disabled }: ColorPickerPr
 
   return (
     <div className="relative" ref={containerRef}>
-      <button
+      <motion.button
+        whileTap={{ scale: 0.95 }}
         type="button"
         disabled={disabled}
         onClick={() => setIsOpen(!isOpen)}
         className={`
-          flex items-center gap-2 p-1.5 rounded-lg border border-zinc-800 bg-zinc-950
-          transition-colors hover:bg-zinc-900
+          flex items-center gap-2 px-2 py-1.5 rounded-xl border border-white/[0.08] bg-zinc-900/80
+          transition-colors hover:border-white/[0.15]
           ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
         `}
       >
-        <div className={`w-5 h-5 rounded-full ${selectedColor?.bgClass || 'bg-zinc-500'}`} />
-        <ChevronDown className="w-4 h-4 text-zinc-400" />
-      </button>
+        <div className={`w-4 h-4 rounded-full shadow-[0_0_8px] ${selectedColor?.bgClass || 'bg-zinc-500'}`} />
+        <ChevronDown className="w-3.5 h-3.5 text-zinc-400" />
+      </motion.button>
 
-      {isOpen && (
-        <div className="absolute z-10 top-full mt-2 left-0 p-2 bg-zinc-900 border border-zinc-700 rounded-lg shadow-xl flex gap-2 w-max max-w-[200px] flex-wrap">
-          {colors.map((c) => {
-            const isSelected = value === c.value;
-            return (
-              <button
-                key={c.value}
-                type="button"
-                onClick={() => {
-                  onChange(c.value);
-                  setIsOpen(false);
-                }}
-                title={c.label}
-                className={`
-                  relative w-7 h-7 rounded-full transition-all duration-200 
-                  flex items-center justify-center
-                  ${c.bgClass} 
-                  hover:scale-110 cursor-pointer
-                  ${isSelected ? 'ring-2 ring-offset-2 ring-offset-zinc-900 ring-zinc-400' : 'border border-zinc-700'}
-                `}
-              >
-                {isSelected && <Check className="w-4 h-4 text-white drop-shadow-md" />}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9, y: 4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 4 }}
+            transition={{ type: "spring", damping: 25, stiffness: 400 }}
+            className="absolute z-20 top-full mt-2 left-0 p-2.5 bg-zinc-950/90 border border-white/[0.12] rounded-2xl shadow-[0_12px_36px_rgba(0,0,0,0.5)] backdrop-blur-2xl flex gap-2 w-max max-w-[200px] flex-wrap"
+          >
+            {colors.map((c) => {
+              const isSelected = value === c.value;
+              return (
+                <motion.button
+                  key={c.value}
+                  type="button"
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => {
+                    onChange(c.value);
+                    setIsOpen(false);
+                  }}
+                  title={c.label}
+                  className={`
+                    relative w-6 h-6 rounded-full transition-all 
+                    flex items-center justify-center
+                    ${c.bgClass} 
+                    cursor-pointer
+                    ${isSelected ? 'ring-2 ring-white ring-offset-2 ring-offset-zinc-950' : 'border border-white/20'}
+                  `}
+                >
+                  {isSelected && <Check className="w-3 h-3 text-white drop-shadow-md stroke-[3]" />}
+                </motion.button>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

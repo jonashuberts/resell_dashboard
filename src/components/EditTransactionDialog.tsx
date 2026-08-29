@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Loader2, Edit2, X } from "lucide-react";
+import { Loader2, Edit2, X, Receipt } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { useLanguage } from "./LanguageContext";
 
 type Transaction = {
@@ -83,160 +84,182 @@ export function EditTransactionDialog({
 
   return (
     <>
-      <button 
+      <motion.button 
+        whileTap={{ scale: 0.92 }}
         onClick={() => setIsOpen(true)}
-        className="text-zinc-400 hover:text-blue-400 p-1 rounded transition-colors"
+        className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
         title={t("tx.edit.btn")}
       >
-        <Edit2 className="h-4 w-4" />
-      </button>
+        <Edit2 className="h-3.5 w-3.5" />
+      </motion.button>
 
-      {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div 
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => !isLoading && setIsOpen(false)}
-          />
-          <div className="relative bg-zinc-950 border border-zinc-800 rounded-xl shadow-xl w-full max-w-md p-6 overflow-hidden">
-            
-            <div className="flex items-center justify-between mb-6 border-b border-zinc-800 pb-4">
-              <h3 className="text-xl font-bold text-white">
-                {t("tx.edit.btn")}
-              </h3>
-              <button 
-                onClick={() => !isLoading && setIsOpen(false)}
-                className="text-zinc-500 hover:text-white transition-colors p-1"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
+      <AnimatePresence>
+        {isOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="absolute inset-0 bg-black/65 backdrop-blur-xl"
+              onClick={() => !isLoading && setIsOpen(false)}
+            />
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm rounded-lg">
-                  {error}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 10 }}
+              transition={{ type: "spring", damping: 26, stiffness: 340 }}
+              className="relative w-full max-w-md rounded-2xl border border-white/[0.12] bg-zinc-950/90 p-6 sm:p-7 shadow-[0_20px_60px_rgba(0,0,0,0.6),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-2xl overflow-hidden"
+            >
+              <div className="flex items-center justify-between pb-4 mb-4 border-b border-white/[0.08]">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/25 text-blue-400">
+                    <Receipt className="h-4 w-4" />
+                  </div>
+                  <h3 className="text-base font-semibold text-white tracking-tight">
+                    {t("tx.edit.btn")}
+                  </h3>
                 </div>
-              )}
-
-              <div className="space-y-2">
-                <label htmlFor="amount" className="text-sm font-medium text-zinc-300">
-                  {t("item.tx.amount")} <span className="text-rose-500">*</span>
-                </label>
-                <input 
-                  id="amount"
-                  name="amount"
-                  type="text" 
-                  required
-                  defaultValue={transaction.amount.toString().replace(".", ",")}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <label htmlFor="type" className="text-sm font-medium text-zinc-300">
-                  {t("item.tx.type")} <span className="text-rose-500">*</span>
-                </label>
-                <select 
-                  id="type"
-                  name="type"
-                  required
-                  defaultValue={transaction.type}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer"
+                <button 
+                  onClick={() => !isLoading && setIsOpen(false)}
+                  className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-colors"
                 >
-                  <option value="Einkauf">{t("tx.type.buy") || "Einkauf"}</option>
-                  <option value="Verkauf">{t("tx.type.sell") || "Verkauf"}</option>
-                  <option value="Reparaturkosten">{t("tx.type.repair") || "Reparaturkosten"}</option>
-                  <option value="Werkzeuge/Sonstiges">{t("tx.type.other") || "Werkzeuge/Sonstiges"}</option>
-                </select>
+                  <X className="h-4 w-4" />
+                </button>
               </div>
 
-              {categories.length > 0 && (
-                <div className="space-y-2">
-                  <label htmlFor="category" className="text-sm font-medium text-zinc-300">
-                    {t("item.form.category")}
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <div className="p-3 bg-rose-500/10 border border-rose-500/25 text-rose-400 text-xs rounded-xl">
+                    {error}
+                  </div>
+                )}
+
+                <div className="space-y-1.5">
+                  <label htmlFor="amount" className="text-xs font-medium text-zinc-300">
+                    {t("item.tx.amount")} <span className="text-rose-400">*</span>
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-zinc-500">€</span>
+                    <input 
+                      id="amount"
+                      name="amount"
+                      type="text" 
+                      required
+                      defaultValue={transaction.amount.toString().replace(".", ",")}
+                      className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl pl-8 pr-4 py-2.5 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-mono tabular-nums transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="type" className="text-xs font-medium text-zinc-300">
+                    {t("item.tx.type")} <span className="text-rose-400">*</span>
                   </label>
                   <select 
-                    id="category"
-                    name="category"
-                    defaultValue={transaction.category || ""}
-                    className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer"
+                    id="type"
+                    name="type"
+                    required
+                    defaultValue={transaction.type}
+                    className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer transition-all"
                   >
-                    <option value="">{t("tx.add.category.none")}</option>
-                    {categories.map(c => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
+                    <option value="Einkauf">{t("tx.type.buy") || "Einkauf"}</option>
+                    <option value="Verkauf">{t("tx.type.sell") || "Verkauf"}</option>
+                    <option value="Reparaturkosten">{t("tx.type.repair") || "Reparaturkosten"}</option>
+                    <option value="Werkzeuge/Sonstiges">{t("tx.type.other") || "Werkzeuge/Sonstiges"}</option>
                   </select>
                 </div>
-              )}
 
-              <div className="space-y-2">
-                <label htmlFor="platform" className="text-sm font-medium text-zinc-300">
-                  {t("item.form.platform")}
-                </label>
-                <select 
-                  id="platform"
-                  name="platform"
-                  defaultValue={transaction.platform || ""}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer"
-                >
-                  <option value="">{t("item.form.platform.none")}</option>
-                  <option value="eBay Kleinanzeigen">eBay Kleinanzeigen</option>
-                  <option value="eBay">eBay</option>
-                  <option value="Amazon">Amazon</option>
-                  <option value="AliExpress">AliExpress</option>
-                  <option value="Vinted">Vinted</option>
-                  <option value="Privat">Privat</option>
-                </select>
-              </div>
+                {categories.length > 0 && (
+                  <div className="space-y-1.5">
+                    <label htmlFor="category" className="text-xs font-medium text-zinc-300">
+                      {t("item.form.category")}
+                    </label>
+                    <select 
+                      id="category"
+                      name="category"
+                      defaultValue={transaction.category || ""}
+                      className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer transition-all"
+                    >
+                      <option value="">{t("tx.add.category.none")}</option>
+                      {categories.map(c => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
 
-              <div className="space-y-2">
-                <label htmlFor="date" className="text-sm font-medium text-zinc-300">
-                  {t("item.tx.date")}
-                </label>
-                <input 
-                  id="date"
-                  name="date"
-                  type="date" 
-                  defaultValue={transaction.date ? new Date(transaction.date).toISOString().split('T')[0] : ""}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 border-[color-mix(in_oklab,var(--color-blue-500)_50%,transparent)]"
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <label htmlFor="platform" className="text-xs font-medium text-zinc-300">
+                    {t("item.form.platform")}
+                  </label>
+                  <select 
+                    id="platform"
+                    name="platform"
+                    defaultValue={transaction.platform || ""}
+                    className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer transition-all"
+                  >
+                    <option value="">{t("item.form.platform.none")}</option>
+                    <option value="eBay Kleinanzeigen">eBay Kleinanzeigen</option>
+                    <option value="eBay">eBay</option>
+                    <option value="Amazon">Amazon</option>
+                    <option value="AliExpress">AliExpress</option>
+                    <option value="Vinted">Vinted</option>
+                    <option value="Privat">Privat</option>
+                  </select>
+                </div>
 
-              <div className="space-y-2">
-                <label htmlFor="notes" className="text-sm font-medium text-zinc-300">
-                  {t("item.form.notes")}
-                </label>
-                <input 
-                  id="notes"
-                  name="notes"
-                  type="text" 
-                  defaultValue={transaction.notes || ""}
-                  className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                />
-              </div>
+                <div className="space-y-1.5">
+                  <label htmlFor="date" className="text-xs font-medium text-zinc-300">
+                    {t("item.tx.date")}
+                  </label>
+                  <input 
+                    id="date"
+                    name="date"
+                    type="date" 
+                    defaultValue={transaction.date ? new Date(transaction.date).toISOString().split('T')[0] : ""}
+                    className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 font-mono transition-all"
+                  />
+                </div>
 
-              <div className="pt-4 flex justify-end gap-3 border-t border-zinc-800 mt-6">
-                <button 
-                  type="button"
-                  onClick={() => setIsOpen(false)}
-                  disabled={isLoading}
-                  className="px-4 py-2 text-sm font-medium text-zinc-400 hover:text-white transition-colors"
-                >
-                  {t("item.form.cancel")}
-                </button>
-                <button 
-                  type="submit"
-                  disabled={isLoading}
-                  className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
-                >
-                  {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-                  {t("item.tx.save")}
-                </button>
-              </div>
-            </form>
+                <div className="space-y-1.5">
+                  <label htmlFor="notes" className="text-xs font-medium text-zinc-300">
+                    {t("item.form.notes")}
+                  </label>
+                  <input 
+                    id="notes"
+                    name="notes"
+                    type="text" 
+                    defaultValue={transaction.notes || ""}
+                    className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
+                  />
+                </div>
+
+                <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/[0.08] mt-6">
+                  <button 
+                    type="button"
+                    onClick={() => setIsOpen(false)}
+                    disabled={isLoading}
+                    className="px-4 py-2 text-xs font-medium text-zinc-400 hover:text-white rounded-xl hover:bg-white/[0.06] transition-colors"
+                  >
+                    {t("item.form.cancel")}
+                  </button>
+                  <motion.button 
+                    whileTap={{ scale: 0.97 }}
+                    type="submit"
+                    disabled={isLoading}
+                    className="apple-button-primary text-white px-5 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2"
+                  >
+                    {isLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                    {t("item.tx.save")}
+                  </motion.button>
+                </div>
+              </form>
+            </motion.div>
           </div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </>
   );
 }

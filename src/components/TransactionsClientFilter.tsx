@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, Tag, Activity, X, ChevronDown } from "lucide-react";
 import { useState, useEffect, useRef, useTransition } from "react";
 import { useLanguage } from "./LanguageContext";
 
@@ -47,39 +47,66 @@ export function TransactionsClientFilter({ categories }: { categories: string[] 
     }, 300);
   };
 
+  const clearSearch = () => {
+    setSearchValue("");
+    updateFilters("search", "");
+  };
+
   return (
-    <div className="p-4 border-b border-zinc-800 flex flex-wrap items-center gap-4">
-      <div className="relative flex-1 min-w-[200px] max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+    <div className="flex flex-wrap items-center gap-3 w-full">
+      {/* Search Input */}
+      <div className="relative flex-1 min-w-[220px] max-w-md">
+        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400 pointer-events-none" />
         <input 
           type="text" 
           placeholder={t("tx.filter.search")}
           value={searchValue}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="w-full bg-zinc-900 border border-zinc-800 rounded-lg pl-10 pr-4 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-violet-500/50"
+          className="w-full bg-zinc-900/80 border border-white/[0.08] hover:border-white/[0.14] rounded-xl pl-9.5 pr-8 py-2 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 backdrop-blur-md shadow-[inset_0_1px_1px_rgba(0,0,0,0.5)] transition-all"
         />
+        {searchValue && (
+          <button 
+            type="button" 
+            onClick={clearSearch}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 h-4 w-4 rounded-full bg-zinc-800 text-zinc-400 hover:text-white flex items-center justify-center transition-colors"
+          >
+            <X className="h-2.5 w-2.5" />
+          </button>
+        )}
       </div>
-      <select 
-        value={currentCategory}
-        onChange={(e) => updateFilters("category", e.target.value)}
-        className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-2 focus:ring-violet-500/50 cursor-pointer"
-      >
-        <option value="all">{t("filter.category.all")}</option>
-        {categories.map(c => (
-          <option key={c} value={c}>{c}</option>
-        ))}
-      </select>
-      <select 
-        value={currentType}
-        onChange={(e) => updateFilters("type", e.target.value)}
-        className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-2 focus:ring-violet-500/50 cursor-pointer"
-      >
-        <option value="all">{t("tx.filter.type.all")}</option>
-        <option value="Einkauf">{t("tx.type.buy")}</option>
-        <option value="Verkauf">{t("tx.type.sell")}</option>
-        <option value="Reparaturkosten">{t("tx.type.repair")}</option>
-        <option value="Werkzeuge/Sonstiges">{t("tx.type.other")}</option>
-      </select>
+
+      {/* Category Dropdown */}
+      <div className="relative inline-flex items-center">
+        <Tag className="absolute left-3 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
+        <select 
+          value={currentCategory}
+          onChange={(e) => updateFilters("category", e.target.value)}
+          className="appearance-none bg-zinc-900/80 border border-white/[0.08] hover:border-white/[0.14] rounded-xl pl-8.5 pr-8 py-2 text-xs font-medium text-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer backdrop-blur-md shadow-[inset_0_1px_1px_rgba(0,0,0,0.5)] transition-all"
+        >
+          <option value="all">{t("filter.category.all")}</option>
+          {categories.map(c => (
+            <option key={c} value={c} className="bg-zinc-900 text-zinc-200">{c}</option>
+          ))}
+        </select>
+        <ChevronDown className="absolute right-2.5 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
+      </div>
+
+      {/* Type Dropdown */}
+      <div className="relative inline-flex items-center">
+        <Activity className="absolute left-3 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
+        <select 
+          value={currentType}
+          onChange={(e) => updateFilters("type", e.target.value)}
+          className="appearance-none bg-zinc-900/80 border border-white/[0.08] hover:border-white/[0.14] rounded-xl pl-8.5 pr-8 py-2 text-xs font-medium text-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer backdrop-blur-md shadow-[inset_0_1px_1px_rgba(0,0,0,0.5)] transition-all"
+        >
+          <option value="all">{t("tx.filter.type.all")}</option>
+          <option value="Einkauf" className="bg-zinc-900 text-zinc-200">{t("tx.type.buy")}</option>
+          <option value="Verkauf" className="bg-zinc-900 text-zinc-200">{t("tx.type.sell")}</option>
+          <option value="Reparaturkosten" className="bg-zinc-900 text-zinc-200">{t("tx.type.repair")}</option>
+          <option value="Werkzeuge/Sonstiges" className="bg-zinc-900 text-zinc-200">{t("tx.type.other")}</option>
+        </select>
+        <ChevronDown className="absolute right-2.5 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
+      </div>
     </div>
   );
 }

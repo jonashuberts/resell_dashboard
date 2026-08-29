@@ -1,5 +1,18 @@
 import { createClient } from "@/lib/supabase-server";
-import { ArrowUpRight, ArrowDownRight, DollarSign, Percent, PackageOpen, TrendingUp, Wallet, Truck, Clock, Trophy, Activity } from "lucide-react";
+import { 
+  ArrowUpRight, 
+  ArrowDownRight, 
+  DollarSign, 
+  Percent, 
+  PackageOpen, 
+  TrendingUp, 
+  Wallet, 
+  Truck, 
+  Clock, 
+  Trophy, 
+  Activity,
+  Layers
+} from "lucide-react";
 import { DashboardChart } from "@/components/DashboardChart";
 import { TimeFilter } from "@/components/TimeFilter";
 import { CategoryFilter } from "@/components/CategoryFilter";
@@ -105,9 +118,7 @@ export default async function DashboardPage({
   const soldCount = soldItems.length;
   
   soldItems.forEach(item => {
-    // Find matching Verkauft transaction to get the exact sale date
     const saleTx = transactions?.find(t => t.item_id === item.id && t.type === "Verkauf");
-    // Find matching Einkauf transaction to get exact purchase date (ignoring database created_at which might be from historical imports)
     const buyTx = transactions?.find(t => t.item_id === item.id && t.type === "Einkauf");
 
     if (saleTx && buyTx) {
@@ -125,7 +136,7 @@ export default async function DashboardPage({
   const toShipCount = allItems?.filter(i => i.status === 'Verkauft (Muss versendet werden)').length || 0;
   const inStockItems = allItems?.filter(i => i.status === 'Auf Lager' || i.status === 'In Reparatur') || [];
   
-  // Calculate stock value (Lagerwert) by summing "Einkauf" transactions for items currently in stock
+  // Calculate stock value (Lagerwert)
   let stockValue = 0;
   if (inStockItems.length > 0) {
     const inStockIds = inStockItems.map(i => i.id);
@@ -135,186 +146,255 @@ export default async function DashboardPage({
       .eq("type", "Einkauf")
       .in("item_id", inStockIds);
       
-      if (stockTxs) {
-        stockTxs.forEach(tx => stockValue += Number(tx.amount));
-      }
+    if (stockTxs) {
+      stockTxs.forEach(tx => stockValue += Number(tx.amount));
     }
-  
-    // Derive recent activity from the already filtered transactions
-    // This ensures that the activity feed matches the Category & Time filters
-    const recentTxs = transactions
-      ? [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 6)
-      : [];
+  }
+
+  const recentTxs = transactions
+    ? [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 6)
+    : [];
 
   return (
-    <div className="p-8">
-      <div className="mb-8 flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight text-white"><Translate tKey="dashboard.title" /></h2>
-        <div className="flex items-center gap-4">
+    <div className="p-6 sm:p-10 max-w-7xl mx-auto space-y-8">
+      {/* Header bar with Apple typography & Segmented controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/[0.06]">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
+            <Translate tKey="dashboard.title" />
+          </h1>
+          <p className="text-xs sm:text-sm text-zinc-400 mt-1 font-normal tracking-tight">
+            Financial analytics & inventory performance overview
+          </p>
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
           <CategoryFilter categories={categories} />
           <TimeFilter />
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-        <Card
+      {/* KPI Cards (Apple Health / Stocks style modular widgets) */}
+      <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <AppleKpiCard
           title={<Translate tKey="dashboard.revenue.title" />}
           value={`€${totalRevenue.toLocaleString("de-DE", { minimumFractionDigits: 2 })}`}
-          icon={<DollarSign className="h-4 w-4 text-emerald-500" />}
+          icon={<DollarSign className="h-4.5 w-4.5 text-emerald-400" />}
+          iconBg="bg-emerald-500/15 border-emerald-500/30 text-emerald-400"
+          accentGlow="from-emerald-500/10 via-transparent to-transparent"
           trend={<Translate tKey="dashboard.revenue.trend" />}
+          trendColor="text-emerald-400"
         />
-        <Card
+        <AppleKpiCard
           title={<Translate tKey="dashboard.expenses.title" />}
           value={`€${totalExpenses.toLocaleString("de-DE", { minimumFractionDigits: 2 })}`}
-          icon={<ArrowDownRight className="h-4 w-4 text-rose-500" />}
+          icon={<ArrowDownRight className="h-4.5 w-4.5 text-rose-400" />}
+          iconBg="bg-rose-500/15 border-rose-500/30 text-rose-400"
+          accentGlow="from-rose-500/10 via-transparent to-transparent"
           trend={<Translate tKey="dashboard.expenses.trend" />}
+          trendColor="text-rose-400"
         />
-        <Card
+        <AppleKpiCard
           title={<Translate tKey="dashboard.profit.title" />}
           value={`€${netProfit.toLocaleString("de-DE", { minimumFractionDigits: 2 })}`}
-          icon={<ArrowUpRight className="h-4 w-4 text-blue-500" />}
+          icon={<ArrowUpRight className="h-4.5 w-4.5 text-blue-400" />}
+          iconBg="bg-blue-500/15 border-blue-500/30 text-blue-400"
+          accentGlow="from-blue-500/10 via-transparent to-transparent"
           trend={<Translate tKey="dashboard.profit.trend" />}
+          trendColor={netProfit >= 0 ? "text-blue-400" : "text-rose-400"}
           highlight={netProfit >= 0}
         />
-        <Card
+        <AppleKpiCard
           title={<Translate tKey="dashboard.roi.title" />}
           value={`${roiPercentage.toFixed(1)}%`}
-          icon={<TrendingUp className="h-4 w-4 text-amber-500" />}
+          icon={<TrendingUp className="h-4.5 w-4.5 text-amber-400" />}
+          iconBg="bg-amber-500/15 border-amber-500/30 text-amber-400"
+          accentGlow="from-amber-500/10 via-transparent to-transparent"
           trend={<Translate tKey="dashboard.roi.trend" amount={avgProfitPerItem.toFixed(2)} />}
+          trendColor="text-amber-400"
         />
       </div>
 
-      <div className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 flex flex-col shadow-sm">
-        <h3 className="text-lg font-medium text-white mb-2 flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-zinc-400" />
-          <Translate tKey="dashboard.cashflow.title" />
-        </h3>
+      {/* Cashflow Chart (Apple Stocks style) */}
+      <div className="apple-card p-6 sm:p-7 relative overflow-hidden">
+        <div className="apple-card-glow" />
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
+              <TrendingUp className="h-4 w-4" />
+            </div>
+            <div>
+              <h3 className="text-base font-semibold text-white tracking-tight">
+                <Translate tKey="dashboard.cashflow.title" />
+              </h3>
+              <p className="text-xs text-zinc-400 font-normal">Income vs. Expenses over time</p>
+            </div>
+          </div>
+        </div>
         <DashboardChart transactions={transactions || []} />
       </div>
 
-      <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Top Categories & Days to Sell */}
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 flex flex-col shadow-sm">
-          <h3 className="text-lg font-medium text-white mb-6 flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-zinc-400" />
-            <Translate tKey="dashboard.categories.title" />
-          </h3>
-          
-          <div className="space-y-4 mb-6 flex-1">
-            {topCategories.length > 0 ? topCategories.map((cat, idx) => (
-              <div key={cat.name} className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <span className="text-zinc-500 font-medium w-4">{idx + 1}.</span>
-                  <span className="text-zinc-300 font-medium">{cat.name}</span>
+      {/* 3-Column Apple Inset Grouped Section */}
+      <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+        {/* Top Categories */}
+        <div className="apple-card p-6 flex flex-col justify-between relative overflow-hidden">
+          <div className="apple-card-glow" />
+          <div>
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400">
+                  <Trophy className="h-4 w-4" />
                 </div>
-                <div className="text-right">
-                  <div className="text-white font-medium">€{cat.profit.toLocaleString("de-DE", { minimumFractionDigits: 2 })}</div>
-                  <div className="text-xs text-zinc-500"><Translate tKey="dashboard.categories.sales" count={cat.solds} /> • <Translate tKey="dashboard.categories.margin" margin={cat.margin.toFixed(1)} /></div>
-                </div>
+                <h3 className="text-sm font-semibold text-white tracking-tight">
+                  <Translate tKey="dashboard.categories.title" />
+                </h3>
               </div>
-            )) : (
-              <div className="text-sm text-zinc-500 text-center py-4"><Translate tKey="dashboard.categories.empty" /></div>
-            )}
+            </div>
+            
+            <div className="space-y-3.5 mb-6">
+              {topCategories.length > 0 ? topCategories.map((cat, idx) => (
+                <div key={cat.name} className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-900/40 border border-white/[0.04] hover:bg-zinc-900/70 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-zinc-800/80 text-[11px] font-bold text-zinc-400 font-mono">
+                      {idx + 1}
+                    </span>
+                    <span className="text-xs font-medium text-zinc-200">{cat.name}</span>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs font-semibold text-white font-mono tabular-nums">
+                      €{cat.profit.toLocaleString("de-DE", { minimumFractionDigits: 2 })}
+                    </div>
+                    <div className="text-[10px] text-zinc-400">
+                      <Translate tKey="dashboard.categories.sales" count={cat.solds} /> • <Translate tKey="dashboard.categories.margin" margin={cat.margin.toFixed(1)} />
+                    </div>
+                  </div>
+                </div>
+              )) : (
+                <div className="text-xs text-zinc-500 text-center py-6">
+                  <Translate tKey="dashboard.categories.empty" />
+                </div>
+              )}
+            </div>
           </div>
           
-          <div className="mt-auto pt-4 border-t border-zinc-800/80">
-            <div className="flex items-center justify-between bg-zinc-950 p-4 rounded-xl border border-zinc-800/50">
+          <div className="pt-4 border-t border-white/[0.06]">
+            <div className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-950/70 border border-white/[0.06]">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-500/10 rounded-lg">
-                  <Clock className="h-5 w-5 text-blue-400" />
+                <div className="p-2 bg-blue-500/10 border border-blue-500/20 rounded-xl text-blue-400">
+                  <Clock className="h-4 w-4" />
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-zinc-400"><Translate tKey="dashboard.days.title" /></div>
-                  <div className="text-xs text-zinc-500"><Translate tKey="dashboard.days.desc" /></div>
+                  <div className="text-xs font-medium text-zinc-300"><Translate tKey="dashboard.days.title" /></div>
+                  <div className="text-[11px] text-zinc-500"><Translate tKey="dashboard.days.desc" /></div>
                 </div>
               </div>
-              <div className="text-xl font-bold text-white">
-                {avgDaysToSell} <span className="text-sm font-medium text-zinc-500"><Translate tKey="dashboard.days.unit" /></span>
+              <div className="text-lg font-bold text-white font-mono tabular-nums">
+                {avgDaysToSell} <span className="text-xs font-normal text-zinc-400"><Translate tKey="dashboard.days.unit" /></span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Recent Activity Feed */}
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 flex flex-col shadow-sm">
-          <h3 className="text-lg font-medium text-white mb-6 flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <Activity className="h-5 w-5 text-zinc-400" />
-              <Translate tKey="dashboard.activity.title" />
-            </span>
-            <Link href="/transactions" className="text-sm text-blue-400 hover:text-blue-300"><Translate tKey="dashboard.activity.viewAll" /></Link>
-          </h3>
-          
-          <div className="space-y-4">
-            {recentTxs && recentTxs.length > 0 ? recentTxs.map((tx) => (
-              <div key={tx.id} className="flex gap-4">
-                <div className="relative mt-1">
-                  <div className={`w-2 h-2 rounded-full absolute top-1.5 left-1/2 -translate-x-1/2 ${
-                    tx.type === 'Verkauf' ? 'bg-emerald-500' : 
-                    tx.type === 'Einkauf' ? 'bg-rose-500' : 'bg-amber-500'
-                  }`} />
-                  <div className="w-px h-full bg-zinc-800 absolute top-4 left-1/2 -translate-x-1/2" />
+        <div className="apple-card p-6 flex flex-col justify-between relative overflow-hidden">
+          <div className="apple-card-glow" />
+          <div>
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                  <Activity className="h-4 w-4" />
                 </div>
-                <div className="flex-1 pb-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-zinc-200 line-clamp-1">
+                <h3 className="text-sm font-semibold text-white tracking-tight">
+                  <Translate tKey="dashboard.activity.title" />
+                </h3>
+              </div>
+              <Link href="/transactions" className="text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                <Translate tKey="dashboard.activity.viewAll" /> →
+              </Link>
+            </div>
+            
+            <div className="space-y-3">
+              {recentTxs && recentTxs.length > 0 ? recentTxs.map((tx) => (
+                <div key={tx.id} className="flex items-center justify-between p-2.5 rounded-xl bg-zinc-900/40 border border-white/[0.04] hover:bg-zinc-900/70 transition-colors group">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className={`h-2.5 w-2.5 shrink-0 rounded-full shadow-[0_0_8px] ${
+                      tx.type === 'Verkauf' ? 'bg-emerald-400 shadow-emerald-400/50' : 
+                      tx.type === 'Einkauf' ? 'bg-rose-400 shadow-rose-400/50' : 'bg-amber-400 shadow-amber-400/50'
+                    }`} />
+                    <div className="min-w-0">
+                      <p className="text-xs font-medium text-zinc-200 truncate">
                         {tx.type === 'Werkzeuge/Sonstiges' ? <Translate tKey="dashboard.activity.expense" /> : ((tx.items as any)?.name || <Translate tKey="dashboard.activity.unknown" />)}
                       </p>
-                      <p className="text-xs text-zinc-500 flex items-center gap-1 mt-0.5">
+                      <p className="text-[10px] text-zinc-400 mt-0.5">
                         {tx.type === 'Verkauf' ? <Translate tKey="dashboard.tx.sell" /> :
                          tx.type === 'Einkauf' ? <Translate tKey="dashboard.tx.buy" /> :
                          tx.type === 'Reparaturkosten' ? <Translate tKey="dashboard.tx.repair" /> :
                          <Translate tKey="dashboard.tx.other" />} • {new Date(tx.date).toLocaleDateString('de-DE')}
                       </p>
                     </div>
-                    <span className={`text-sm font-medium shrink-0 ml-2 ${
-                      tx.type === 'Verkauf' ? 'text-emerald-400' : 'text-zinc-300'
-                    }`}>
-                      {tx.type === 'Verkauf' ? '+' : '-'}€{Number(tx.amount).toLocaleString("de-DE", { minimumFractionDigits: 2 })}
-                    </span>
                   </div>
+                  <span className={`text-xs font-semibold shrink-0 ml-3 font-mono tabular-nums ${
+                    tx.type === 'Verkauf' ? 'text-emerald-400' : 'text-zinc-300'
+                  }`}>
+                    {tx.type === 'Verkauf' ? '+' : '-'}€{Number(tx.amount).toLocaleString("de-DE", { minimumFractionDigits: 2 })}
+                  </span>
                 </div>
-              </div>
-            )) : (
-              <div className="text-sm text-zinc-500 text-center py-4"><Translate tKey="dashboard.activity.empty" /></div>
-            )}
+              )) : (
+                <div className="text-xs text-zinc-500 text-center py-6"><Translate tKey="dashboard.activity.empty" /></div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* Logistics & Stock */}
-        <div className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-6 flex flex-col shadow-sm">
-          <h3 className="text-lg font-medium text-white mb-6 flex items-center justify-between">
-            <span className="flex items-center gap-2">
-              <PackageOpen className="h-5 w-5 text-zinc-400" />
-              <Translate tKey="dashboard.logistics.title" />
-            </span>
-            <Link href="/inventory" className="text-sm text-blue-400 hover:text-blue-300"><Translate tKey="dashboard.logistics.open" /></Link>
-          </h3>
-          
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800/80 flex flex-col items-center justify-center text-center">
-              <span className="text-sm font-medium text-zinc-400 mb-1 flex items-center gap-1"><Wallet className="h-3 w-3" /> <Translate tKey="dashboard.logistics.value" /></span>
-              <span className="text-2xl font-bold text-blue-400">€{stockValue.toLocaleString("de-DE", { minimumFractionDigits: 2 })}</span>
+        <div className="apple-card p-6 flex flex-col justify-between relative overflow-hidden">
+          <div className="apple-card-glow" />
+          <div>
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
+                  <PackageOpen className="h-4 w-4" />
+                </div>
+                <h3 className="text-sm font-semibold text-white tracking-tight">
+                  <Translate tKey="dashboard.logistics.title" />
+                </h3>
+              </div>
+              <Link href="/inventory" className="text-xs text-blue-400 hover:text-blue-300 font-medium transition-colors">
+                <Translate tKey="dashboard.logistics.open" /> →
+              </Link>
             </div>
-            <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800/80 flex flex-col items-center justify-center text-center">
-              <span className="text-sm font-medium text-zinc-400 mb-1 flex items-center gap-1"><Truck className="h-3 w-3" /> <Translate tKey="dashboard.logistics.ship" /></span>
-              <span className={`text-2xl font-bold ${toShipCount > 0 ? 'text-amber-500' : 'text-zinc-500'}`}>{toShipCount}</span>
+            
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="p-3.5 rounded-xl bg-zinc-950/70 border border-white/[0.06] text-center flex flex-col items-center justify-center">
+                <span className="text-[11px] font-medium text-zinc-400 mb-1 flex items-center gap-1">
+                  <Wallet className="h-3 w-3 text-blue-400" /> <Translate tKey="dashboard.logistics.value" />
+                </span>
+                <span className="text-lg font-bold text-white font-mono tabular-nums">
+                  €{stockValue.toLocaleString("de-DE", { minimumFractionDigits: 2 })}
+                </span>
+              </div>
+              <div className="p-3.5 rounded-xl bg-zinc-950/70 border border-white/[0.06] text-center flex flex-col items-center justify-center">
+                <span className="text-[11px] font-medium text-zinc-400 mb-1 flex items-center gap-1">
+                  <Truck className="h-3 w-3 text-amber-400" /> <Translate tKey="dashboard.logistics.ship" />
+                </span>
+                <span className={`text-lg font-bold font-mono tabular-nums ${toShipCount > 0 ? 'text-amber-400' : 'text-zinc-400'}`}>
+                  {toShipCount}
+                </span>
+              </div>
             </div>
-          </div>
 
-          <div className="space-y-3 mt-auto">
-            <div className="flex justify-between items-center bg-zinc-950/50 px-4 py-3 rounded-lg border border-zinc-800/50">
-              <span className="text-zinc-400 font-medium"><Translate tKey="dashboard.logistics.total" /></span>
-              <span className="text-lg font-bold text-white">{itemsCount}</span>
-            </div>
-            <div className="flex justify-between items-center bg-zinc-950/50 px-4 py-3 rounded-lg border border-zinc-800/50">
-              <span className="text-zinc-400 font-medium"><Translate tKey="dashboard.logistics.sold" /></span>
-              <span className="text-lg font-bold text-emerald-400">{soldCount}</span>
-            </div>
-            <div className="flex justify-between items-center bg-zinc-950/50 px-4 py-3 rounded-lg border border-zinc-800/50">
-              <span className="text-zinc-400 font-medium"><Translate tKey="dashboard.logistics.stock" /></span>
-              <span className="text-lg font-bold text-blue-400">{itemsCount - soldCount}</span>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center bg-zinc-900/40 px-3.5 py-2.5 rounded-xl border border-white/[0.04]">
+                <span className="text-xs text-zinc-400 font-medium"><Translate tKey="dashboard.logistics.total" /></span>
+                <span className="text-xs font-bold text-white font-mono">{itemsCount}</span>
+              </div>
+              <div className="flex justify-between items-center bg-zinc-900/40 px-3.5 py-2.5 rounded-xl border border-white/[0.04]">
+                <span className="text-xs text-zinc-400 font-medium"><Translate tKey="dashboard.logistics.sold" /></span>
+                <span className="text-xs font-bold text-emerald-400 font-mono">{soldCount}</span>
+              </div>
+              <div className="flex justify-between items-center bg-zinc-900/40 px-3.5 py-2.5 rounded-xl border border-white/[0.04]">
+                <span className="text-xs text-zinc-400 font-medium"><Translate tKey="dashboard.logistics.stock" /></span>
+                <span className="text-xs font-bold text-blue-400 font-mono">{itemsCount - soldCount}</span>
+              </div>
             </div>
           </div>
         </div>
@@ -323,22 +403,50 @@ export default async function DashboardPage({
   );
 }
 
-function Card({ title, value, icon, trend, highlight }: { title: React.ReactNode, value: React.ReactNode, icon: React.ReactNode, trend?: React.ReactNode, highlight?: boolean }) {
+function AppleKpiCard({ 
+  title, 
+  value, 
+  icon, 
+  iconBg,
+  accentGlow,
+  trend, 
+  trendColor = "text-zinc-400",
+  highlight 
+}: { 
+  title: React.ReactNode; 
+  value: React.ReactNode; 
+  icon: React.ReactNode; 
+  iconBg: string;
+  accentGlow: string;
+  trend?: React.ReactNode; 
+  trendColor?: string;
+  highlight?: boolean;
+}) {
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-6 shadow-sm relative overflow-hidden group hover:border-zinc-700 transition-colors">
-      <div className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <h3 className="text-sm font-medium text-zinc-400">{title}</h3>
-        {icon}
+    <div className="apple-card p-6 relative overflow-hidden group cursor-default">
+      <div className="apple-card-glow" />
+      {/* Subtle ambient corner glow */}
+      <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${accentGlow} pointer-events-none blur-2xl`} />
+
+      <div className="flex items-center justify-between pb-3">
+        <h3 className="text-xs font-medium tracking-tight text-zinc-400">{title}</h3>
+        <div className={`flex h-8 w-8 items-center justify-center rounded-xl border shadow-sm ${iconBg}`}>
+          {icon}
+        </div>
       </div>
-      <div>
-        <div className={`text-3xl font-bold tracking-tight ${highlight === true ? 'text-emerald-500' : 'text-zinc-100'}`}>
+
+      <div className="mt-1">
+        <div className={`text-2xl sm:text-3xl font-bold tracking-tight font-mono tabular-nums ${
+          highlight === true ? 'text-white' : 'text-zinc-100'
+        }`}>
           {value}
         </div>
         {trend && (
-          <p className="text-xs text-zinc-500 mt-2 font-medium">{trend}</p>
+          <p className={`text-xs mt-2 font-medium tracking-tight flex items-center gap-1 ${trendColor}`}>
+            {trend}
+          </p>
         )}
       </div>
-      <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-zinc-800 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
     </div>
   );
 }

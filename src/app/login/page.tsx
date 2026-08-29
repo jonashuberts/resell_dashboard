@@ -1,29 +1,29 @@
 import { LoginForm } from "@/components/LoginForm";
 import { Translate } from "@/components/Translate";
+import { Sparkles } from "lucide-react";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 shadow-2xl backdrop-blur-sm">
-        <div className="mb-8 text-center">
-          <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center mx-auto mb-4 border border-blue-500/20 shadow-[0_0_15px_rgba(59,130,246,0.1)]">
-            <svg
-              className="w-6 h-6 text-blue-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-              />
-            </svg>
+    <div className="min-h-screen bg-[#070709] flex flex-col items-center justify-center p-4 relative overflow-hidden">
+      {/* Ambient background glow */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+        <div className="absolute top-[20%] left-[30%] h-[450px] w-[450px] rounded-full bg-blue-600/[0.08] blur-[130px]" />
+        <div className="absolute bottom-[20%] right-[30%] h-[400px] w-[400px] rounded-full bg-indigo-600/[0.06] blur-[140px]" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-md apple-card p-8 sm:p-9 shadow-2xl overflow-hidden">
+        <div className="apple-card-glow" />
+        
+        <div className="mb-7 text-center">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-b from-blue-500 to-blue-600 shadow-[0_4px_16px_rgba(37,99,235,0.4),inset_0_1px_0_rgba(255,255,255,0.3)] border border-white/20 mx-auto mb-4">
+            <Sparkles className="w-6 h-6 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight"><Translate tKey="auth.login.title" /></h2>
-          <p className="text-zinc-400 text-sm mt-2"><Translate tKey="auth.login.desc" /></p>
+          <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            <Translate tKey="auth.login.title" />
+          </h2>
+          <p className="text-zinc-400 text-xs mt-1.5 font-normal tracking-tight">
+            <Translate tKey="auth.login.desc" />
+          </p>
         </div>
 
         <LoginForm />

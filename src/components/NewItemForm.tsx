@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Loader2 } from "lucide-react";
+import { Loader2, Plus, Sparkles } from "lucide-react";
+import { motion } from "motion/react";
 import Link from "next/link";
 import { useLanguage } from "./LanguageContext";
 
@@ -69,7 +70,6 @@ export function NewItemForm({ categories, statuses, queryString }: NewItemFormPr
 
       // 2. Insert Transaction if price is given
       if (rawPrice) {
-        // Handle both dot and comma
         const cleanedPrice = rawPrice.replace(",", ".");
         const buyAmount = parseFloat(cleanedPrice);
         
@@ -89,7 +89,7 @@ export function NewItemForm({ categories, statuses, queryString }: NewItemFormPr
         }
       }
 
-      // 3. Insert Sale Transaction if item is already sold and sell_price is given
+      // 3. Insert Sale Transaction if item is already sold
       if (isSoldStatus && rawSellPrice) {
         const cleanedSellPrice = rawSellPrice.replace(",", ".");
         const sellAmount = parseFloat(cleanedSellPrice);
@@ -101,7 +101,7 @@ export function NewItemForm({ categories, statuses, queryString }: NewItemFormPr
               item_id: itemData.id,
               type: "Verkauf",
               amount: sellAmount,
-              platform: platform || null, // Assuming same platform as purchase or manual note
+              platform: platform || null,
               date: sellDate || date || new Date().toISOString().split('T')[0],
               notes: "Direkt als verkauft eingetragen",
             });
@@ -121,17 +121,20 @@ export function NewItemForm({ categories, statuses, queryString }: NewItemFormPr
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 bg-zinc-950 border border-zinc-800 rounded-xl p-6 shadow-sm">
+    <form onSubmit={handleSubmit} className="apple-card p-6 sm:p-8 space-y-6 relative overflow-hidden shadow-2xl">
+      <div className="apple-card-glow" />
+
       {error && (
-        <div className="p-4 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg">
+        <div className="p-3.5 bg-rose-500/10 border border-rose-500/25 text-rose-400 text-xs rounded-xl">
           {error}
         </div>
       )}
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <div className="space-y-2">
-          <label htmlFor="name" className="text-sm font-medium text-zinc-300">
-            {t("item.form.name")} <span className="text-rose-500">*</span>
+      <div className="grid gap-5 md:grid-cols-2">
+        {/* Item Name */}
+        <div className="space-y-1.5">
+          <label htmlFor="name" className="text-xs font-medium text-zinc-300">
+            {t("item.form.name")} <span className="text-rose-400">*</span>
           </label>
           <input 
             id="name"
@@ -139,21 +142,22 @@ export function NewItemForm({ categories, statuses, queryString }: NewItemFormPr
             type="text" 
             required
             placeholder={t("item.form.name.placeholder")}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+            className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
           />
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="category" className="flex items-center justify-between text-sm font-medium text-zinc-300">
-            <span>{t("item.form.category")} <span className="text-rose-500">*</span></span>
+        {/* Category Selector */}
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between text-xs font-medium text-zinc-300">
+            <span>{t("item.form.category")} <span className="text-rose-400">*</span></span>
             <button 
               type="button" 
               onClick={() => setIsNewCategory(!isNewCategory)}
-              className="text-xs text-blue-400 hover:text-blue-300"
+              className="text-[11px] text-blue-400 hover:text-blue-300 transition-colors"
             >
               {isNewCategory ? t("item.form.category.select") : t("item.form.category.new")}
             </button>
-          </label>
+          </div>
           {isNewCategory ? (
             <input 
               id="category_new"
@@ -162,54 +166,61 @@ export function NewItemForm({ categories, statuses, queryString }: NewItemFormPr
               required={isNewCategory}
               placeholder={t("item.form.category.placeholder")}
               autoFocus
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+              className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
             />
           ) : (
             <select 
               id="category_select"
               name="category_select"
               required={!isNewCategory}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer"
+              className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer transition-all"
             >
               {categories.map(c => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c} value={c} className="bg-zinc-900 text-zinc-200">{c}</option>
               ))}
             </select>
           )}
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="status" className="text-sm font-medium text-zinc-300">
-            {t("item.form.status")} <span className="text-rose-500">*</span>
+        {/* Status */}
+        <div className="space-y-1.5">
+          <label htmlFor="status" className="text-xs font-medium text-zinc-300">
+            {t("item.form.status")} <span className="text-rose-400">*</span>
           </label>
           <select 
             id="status"
             name="status"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer"
+            className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer transition-all"
           >
             {statuses.map(s => (
-              <option key={s} value={s}>{s}</option>
+              <option key={s} value={s} className="bg-zinc-900 text-zinc-200">{s}</option>
             ))}
           </select>
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="price" className="text-sm font-medium text-zinc-300">
-            {t("item.form.buyPrice")} <span className="text-zinc-500 text-xs font-normal ml-1">{t("item.form.buyPrice.hint")}</span>
+        {/* Buy Price */}
+        <div className="space-y-1.5">
+          <label htmlFor="price" className="text-xs font-medium text-zinc-300 flex items-center justify-between">
+            <span>{t("item.form.buyPrice")}</span>
+            <span className="text-zinc-500 text-[11px] font-normal">{t("item.form.buyPrice.hint")}</span>
           </label>
-          <input 
-            id="price"
-            name="price"
-            type="text" 
-            placeholder={t("item.form.placeholder.purchasePrice")}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-          />
+          <div className="relative">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-zinc-500">€</span>
+            <input 
+              id="price"
+              name="price"
+              type="text" 
+              placeholder={t("item.form.placeholder.purchasePrice")}
+              className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl pl-8 pr-4 py-2.5 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-mono tabular-nums transition-all"
+            />
+          </div>
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="date" className="text-sm font-medium text-zinc-300">
+        {/* Purchase Date */}
+        <div className="space-y-1.5">
+          <label htmlFor="date" className="text-xs font-medium text-zinc-300">
             {t("item.form.buyDate")}
           </label>
           <input 
@@ -217,18 +228,19 @@ export function NewItemForm({ categories, statuses, queryString }: NewItemFormPr
             name="date"
             type="date" 
             defaultValue={new Date().toISOString().split('T')[0]}
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[color-mix(in_oklab,var(--color-blue-500)_50%,transparent)]"
+            className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-mono transition-all"
           />
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="platform" className="text-sm font-medium text-zinc-300">
+        {/* Purchase Platform */}
+        <div className="space-y-1.5">
+          <label htmlFor="platform" className="text-xs font-medium text-zinc-300">
             {t("item.form.platform")}
           </label>
           <select 
             id="platform"
             name="platform"
-            className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[color-mix(in_oklab,var(--color-blue-500)_50%,transparent)] cursor-pointer"
+            className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer transition-all"
           >
             <option value="">{t("item.form.platform.none")}</option>
             <option value="eBay Kleinanzeigen">eBay Kleinanzeigen</option>
@@ -241,25 +253,32 @@ export function NewItemForm({ categories, statuses, queryString }: NewItemFormPr
         </div>
       </div>
 
+      {/* Direct Sale Info Box (if status is sold) */}
       {isSoldStatus && (
-        <div className="p-5 bg-emerald-500/5 border border-emerald-500/20 rounded-xl space-y-4 shadow-sm">
-          <h4 className="text-sm font-medium text-emerald-400">{t("item.form.sellDetails")}</h4>
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <label htmlFor="sell_price" className="text-sm font-medium text-zinc-300">
-                {t("item.form.sellPrice")} <span className="text-emerald-500">*</span> <span className="text-emerald-500/60 text-xs font-normal ml-1">{t("item.form.sellPrice.hint")}</span>
+        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/25 space-y-3">
+          <h4 className="text-xs font-semibold text-emerald-400 flex items-center gap-1.5">
+            <Sparkles className="h-3.5 w-3.5" />
+            {t("item.form.sellDetails")}
+          </h4>
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-1.5">
+              <label htmlFor="sell_price" className="text-xs font-medium text-zinc-300">
+                {t("item.form.sellPrice")} <span className="text-emerald-400">*</span>
               </label>
-              <input 
-                id="sell_price"
-                name="sell_price"
-                type="text" 
-                placeholder={t("item.form.placeholder.salePrice")}
-                required={isSoldStatus}
-                className="w-full bg-zinc-950 border border-emerald-500/30 rounded-lg px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/50"
-              />
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-xs font-medium text-zinc-500">€</span>
+                <input 
+                  id="sell_price"
+                  name="sell_price"
+                  type="text" 
+                  placeholder={t("item.form.placeholder.salePrice")}
+                  required={isSoldStatus}
+                  className="w-full bg-zinc-950 border border-emerald-500/30 rounded-xl pl-8 pr-4 py-2.5 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 font-mono tabular-nums transition-all"
+                />
+              </div>
             </div>
-            <div className="space-y-2">
-              <label htmlFor="sell_date" className="text-sm font-medium text-zinc-300">
+            <div className="space-y-1.5">
+              <label htmlFor="sell_date" className="text-xs font-medium text-zinc-300">
                 {t("item.form.sellDate")}
               </label>
               <input 
@@ -267,15 +286,16 @@ export function NewItemForm({ categories, statuses, queryString }: NewItemFormPr
                 name="sell_date"
                 type="date" 
                 defaultValue={new Date().toISOString().split('T')[0]}
-                className="w-full bg-zinc-950 border border-emerald-500/30 rounded-lg px-4 py-2.5 text-sm text-zinc-100 focus:outline-none focus:ring-2 focus:ring-[color-mix(in_oklab,var(--color-emerald-500)_50%,transparent)]"
+                className="w-full bg-zinc-950 border border-emerald-500/30 rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 font-mono transition-all"
               />
             </div>
           </div>
         </div>
       )}
 
-      <div className="space-y-2">
-        <label htmlFor="notes" className="text-sm font-medium text-zinc-300">
+      {/* Notes */}
+      <div className="space-y-1.5">
+        <label htmlFor="notes" className="text-xs font-medium text-zinc-300">
           {t("item.form.notes")}
         </label>
         <textarea 
@@ -283,27 +303,28 @@ export function NewItemForm({ categories, statuses, queryString }: NewItemFormPr
           name="notes"
           rows={3}
           placeholder={t("item.form.notes.placeholder")}
-          className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2.5 text-sm text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/50 resize-y"
+          className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 resize-y transition-all"
         />
       </div>
 
-      <div className="pt-4 flex justify-end gap-3 border-t border-zinc-800">
+      {/* Actions */}
+      <div className="pt-4 flex items-center justify-end gap-3 border-t border-white/[0.08]">
         <Link 
           href={queryString ? `/inventory?${queryString}` : "/inventory"}
-          className="px-5 py-2.5 text-sm font-medium text-zinc-300 hover:text-white transition-colors"
+          className="px-4 py-2.5 text-xs font-medium text-zinc-400 hover:text-white rounded-xl hover:bg-white/[0.06] transition-colors"
         >
           {t("item.form.cancel")}
         </Link>
-        <button 
+        <motion.button 
+          whileTap={{ scale: 0.97 }}
           type="submit"
           disabled={isLoading}
-          className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
+          className="apple-button-primary text-white px-5 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2"
         >
-          {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+          {isLoading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
           {t("item.form.save")}
-        </button>
+        </motion.button>
       </div>
-
     </form>
   );
 }

@@ -33,20 +33,22 @@ export default async function NewItemPage({
   const categories = Array.from(categoryNames);
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <div className="mb-8 flex items-center gap-4">
+    <div className="p-6 sm:p-10 max-w-4xl mx-auto space-y-8">
+      <div className="flex items-center gap-4 pb-2 border-b border-white/[0.06]">
         <Link 
           href={`/inventory${queryString ? `?${queryString}` : ''}`}
-          className="p-2 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-colors"
+          className="flex h-9 w-9 items-center justify-center rounded-xl bg-zinc-900 border border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.15] transition-all"
         >
-          <ArrowLeft className="h-5 w-5" />
+          <ArrowLeft className="h-4 w-4" />
         </Link>
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-            <Package className="h-8 w-8 text-blue-500" />
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
+            <Package className="h-7 w-7 text-blue-500" />
             <Translate tKey="item.new.title" />
-          </h2>
-          <p className="text-zinc-400 mt-1"><Translate tKey="item.new.desc" /></p>
+          </h1>
+          <p className="text-xs sm:text-sm text-zinc-400 mt-1 font-normal tracking-tight">
+            <Translate tKey="item.new.desc" />
+          </p>
         </div>
       </div>
 

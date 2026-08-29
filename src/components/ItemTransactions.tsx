@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-import { Loader2, Plus, ArrowDownRight, ArrowUpRight, Wrench } from "lucide-react";
+import { Loader2, Plus, ArrowDownRight, ArrowUpRight, Wrench, Trash2 } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import dayjs from "dayjs";
 import { useLanguage } from "./LanguageContext";
 
@@ -68,7 +69,7 @@ export function ItemTransactions({ item, initialTransactions }: ItemTransactions
 
       setTransactions([data, ...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()));
       setIsAdding(false);
-      router.refresh(); // Tells server component to recalculate metrics
+      router.refresh();
     } catch (err: any) {
       console.error(err);
       setError(t("item.tx.error.add"));
@@ -98,108 +99,119 @@ export function ItemTransactions({ item, initialTransactions }: ItemTransactions
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'Einkauf':
-        return <ArrowDownRight className="h-4 w-4 text-rose-500" />;
+        return <ArrowDownRight className="h-3.5 w-3.5 text-rose-400" />;
       case 'Verkauf':
-        return <ArrowUpRight className="h-4 w-4 text-emerald-500" />;
+        return <ArrowUpRight className="h-3.5 w-3.5 text-emerald-400" />;
       case 'Reparaturkosten':
-        return <Wrench className="h-4 w-4 text-amber-500" />;
+        return <Wrench className="h-3.5 w-3.5 text-amber-400" />;
       default:
-        return <ArrowDownRight className="h-4 w-4 text-zinc-500" />;
+        return <ArrowDownRight className="h-3.5 w-3.5 text-zinc-400" />;
     }
   };
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'Einkauf': return 'text-rose-400 bg-rose-500/10 border-rose-500/20';
-      case 'Verkauf': return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20';
-      case 'Reparaturkosten': return 'text-amber-400 bg-amber-500/10 border-amber-500/20';
-      default: return 'text-zinc-400 bg-zinc-500/10 border-zinc-500/20';
+      case 'Einkauf': return 'text-rose-400 bg-rose-500/10 border-rose-500/25';
+      case 'Verkauf': return 'text-emerald-400 bg-emerald-500/10 border-emerald-500/25';
+      case 'Reparaturkosten': return 'text-amber-400 bg-amber-500/10 border-amber-500/25';
+      default: return 'text-zinc-400 bg-zinc-500/10 border-zinc-500/25';
     }
   };
 
   return (
-    <div className="space-y-6">
-      {!isAdding ? (
-        <button 
-          onClick={() => setIsAdding(true)}
-          className="w-full py-3 border border-dashed border-zinc-700 hover:border-zinc-500 rounded-lg text-zinc-400 hover:text-zinc-300 transition-colors flex items-center justify-center gap-2 text-sm font-medium"
-        >
-          <Plus className="h-4 w-4" />
-          {t("item.tx.addBtn")}
-        </button>
-      ) : (
-        <form onSubmit={handleAddExpense} className="bg-zinc-900 border border-zinc-800 rounded-lg p-5 space-y-4">
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="text-sm font-medium text-white">{t("item.tx.addTitle")}</h4>
-            <button 
-              type="button" 
-              onClick={() => setIsAdding(false)}
-              className="text-zinc-500 hover:text-zinc-300 text-sm"
-            >
-              {t("item.form.cancel")}
-            </button>
-          </div>
-          
-          {error && <div className="text-rose-400 text-xs bg-rose-500/10 p-2 rounded">{error}</div>}
+    <div className="space-y-5">
+      <AnimatePresence mode="wait">
+        {!isAdding ? (
+          <motion.button 
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setIsAdding(true)}
+            className="w-full py-3 border border-dashed border-white/[0.15] hover:border-white/[0.25] rounded-xl text-zinc-400 hover:text-white bg-zinc-900/30 hover:bg-zinc-900/60 transition-all flex items-center justify-center gap-2 text-xs font-medium"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            {t("item.tx.addBtn")}
+          </motion.button>
+        ) : (
+          <motion.form 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            onSubmit={handleAddExpense} 
+            className="bg-zinc-900/60 border border-white/[0.1] rounded-xl p-4.5 space-y-4 shadow-lg backdrop-blur-md"
+          >
+            <div className="flex items-center justify-between">
+              <h4 className="text-xs font-semibold text-white">{t("item.tx.addTitle")}</h4>
+              <button 
+                type="button" 
+                onClick={() => setIsAdding(false)}
+                className="text-zinc-400 hover:text-white text-xs font-medium"
+              >
+                {t("item.form.cancel")}
+              </button>
+            </div>
+            
+            {error && <div className="text-rose-400 text-xs bg-rose-500/10 border border-rose-500/20 p-2 rounded-lg">{error}</div>}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">{t("item.tx.type")}</label>
-              <select name="type" className="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-100 focus:outline-none cursor-pointer">
-                <option value="Reparaturkosten">{t("item.tx.type.repair")}</option>
-                <option value="Werkzeuge/Sonstiges">{t("item.tx.type.other")}</option>
-              </select>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-zinc-400">{t("item.tx.type")}</label>
+                <select name="type" className="w-full bg-zinc-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-zinc-100 focus:outline-none cursor-pointer">
+                  <option value="Reparaturkosten">{t("item.tx.type.repair")}</option>
+                  <option value="Werkzeuge/Sonstiges">{t("item.tx.type.other")}</option>
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-zinc-400">{t("item.tx.amount")}</label>
+                <input name="amount" type="text" required placeholder="0,00" className="w-full bg-zinc-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-zinc-100 focus:outline-none font-mono tabular-nums" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-zinc-400">{t("item.tx.date")}</label>
+                <input name="date" type="date" defaultValue={new Date().toISOString().split('T')[0]} className="w-full bg-zinc-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-zinc-100 focus:outline-none font-mono" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-medium text-zinc-400">{t("item.form.notes")}</label>
+                <input name="notes" type="text" placeholder={t("item.tx.notes.placeholder")} className="w-full bg-zinc-950 border border-white/[0.08] rounded-xl px-3 py-2 text-xs text-zinc-100 focus:outline-none" />
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">{t("item.tx.amount")}</label>
-              <input name="amount" type="text" required placeholder="0,00" className="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-100 focus:outline-none" />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">{t("item.tx.date")}</label>
-              <input name="date" type="date" defaultValue={new Date().toISOString().split('T')[0]} className="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-100 focus:outline-none" />
-            </div>
-            <div className="space-y-1.5">
-              <label className="text-xs font-medium text-zinc-400">{t("item.form.notes")}</label>
-              <input name="notes" type="text" placeholder={t("item.tx.notes.placeholder")} className="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-zinc-100 focus:outline-none" />
-            </div>
-          </div>
 
-          <div className="pt-2 flex justify-end">
-            <button 
-              type="submit" 
-              disabled={isLoading}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2"
-            >
-              {isLoading && <Loader2 className="h-3 w-3 animate-spin" />}
-              {t("item.tx.save")}
-            </button>
-          </div>
-        </form>
-      )}
+            <div className="pt-2 flex justify-end">
+              <motion.button 
+                whileTap={{ scale: 0.97 }}
+                type="submit" 
+                disabled={isLoading}
+                className="apple-button-primary text-white px-4 py-2 rounded-xl text-xs font-medium flex items-center gap-2"
+              >
+                {isLoading && <Loader2 className="h-3 w-3 animate-spin" />}
+                {t("item.tx.save")}
+              </motion.button>
+            </div>
+          </motion.form>
+        )}
+      </AnimatePresence>
 
       {transactions.length === 0 ? (
-        <p className="text-sm text-zinc-500 mt-4">{t("item.tx.empty")}</p>
+        <p className="text-xs text-zinc-500 py-6 text-center">{t("item.tx.empty")}</p>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
           {transactions.map(tx => (
-             <div key={tx.id} className="flex items-start justify-between p-4 bg-zinc-900/50 border border-zinc-800/50 rounded-lg group">
-               <div className="flex items-start gap-4">
-                 <div className={`p-2 rounded-full border ${getTypeColor(tx.type)}`}>
+             <div key={tx.id} className="flex items-center justify-between p-3 rounded-xl bg-zinc-900/40 border border-white/[0.04] hover:bg-zinc-900/70 transition-colors group">
+               <div className="flex items-center gap-3">
+                 <div className={`flex h-7 w-7 items-center justify-center rounded-lg border ${getTypeColor(tx.type)}`}>
                    {getTypeIcon(tx.type)}
                  </div>
                  <div>
-                   <div className="font-medium text-zinc-200 text-sm flex items-center gap-2">
+                   <div className="font-medium text-zinc-200 text-xs flex items-center gap-1.5">
                      {tx.type} 
-                     {tx.platform && <span className="text-xs text-zinc-500 font-normal">{t("item.tx.via")}{tx.platform}</span>}
+                     {tx.platform && <span className="text-[10px] text-zinc-500 font-normal">{t("item.tx.via")}{tx.platform}</span>}
                    </div>
-                   <div className="text-xs text-zinc-500 mt-0.5">
+                   <div className="text-[11px] text-zinc-500 font-mono">
                      {dayjs(tx.date).format('DD.MM.YYYY')} 
-                     {tx.notes && <span className="ml-2">— {tx.notes}</span>}
+                     {tx.notes && <span className="ml-2 text-zinc-400 font-sans">— {tx.notes}</span>}
                    </div>
                  </div>
                </div>
-               <div className="flex flex-col items-end gap-2">
-                 <div className={`font-medium ${tx.type === 'Verkauf' ? 'text-emerald-400' : 'text-rose-400'}`}>
+               <div className="flex items-center gap-3">
+                 <div className={`font-mono font-semibold text-xs tabular-nums ${tx.type === 'Verkauf' ? 'text-emerald-400' : 'text-rose-400'}`}>
                    {tx.type === 'Verkauf' ? '+' : '-'}{tx.amount.toFixed(2).replace('.', ',')} €
                  </div>
                  <button 
@@ -208,7 +220,7 @@ export function ItemTransactions({ item, initialTransactions }: ItemTransactions
                    className="text-zinc-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-opacity p-1"
                    title="Transaktion löschen"
                  >
-                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                   <Trash2 className="h-3.5 w-3.5" />
                  </button>
                </div>
              </div>

@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useLanguage } from "./LanguageContext";
+import { ChevronDown, Tag } from "lucide-react";
 
 export function CategoryFilter({ categories }: { categories: string[] }) {
   const router = useRouter();
@@ -10,25 +11,29 @@ export function CategoryFilter({ categories }: { categories: string[] }) {
   const { t } = useLanguage();
 
   return (
-    <select
-      value={currentCategory}
-      onChange={(e) => {
-        const params = new URLSearchParams(searchParams.toString());
-        if (e.target.value !== "all") {
-          params.set("category", e.target.value);
-        } else {
-          params.delete("category");
-        }
-        router.push(`/?${params.toString()}`);
-      }}
-      className="bg-zinc-900 border border-zinc-800 rounded-lg pl-4 pr-10 py-2 text-sm text-zinc-300 focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M5%208l5%205%205-5%22%20stroke%3D%22%2371717a%22%20stroke-width%3D%222%22%20fill%3D%22none%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E')] bg-[length:20px] bg-no-repeat bg-[position:right_10px_center]"
-    >
-      <option value="all">{t("filter.category.all")}</option>
-      {categories.map((c) => (
-        <option key={c} value={c}>
-          {c}
-        </option>
-      ))}
-    </select>
+    <div className="relative inline-flex items-center">
+      <Tag className="absolute left-3 h-3.5 w-3.5 text-zinc-400 pointer-events-none" />
+      <select
+        value={currentCategory}
+        onChange={(e) => {
+          const params = new URLSearchParams(searchParams.toString());
+          if (e.target.value !== "all") {
+            params.set("category", e.target.value);
+          } else {
+            params.delete("category");
+          }
+          router.push(`/?${params.toString()}`);
+        }}
+        className="appearance-none bg-zinc-900/80 border border-white/[0.08] hover:border-white/[0.15] rounded-xl pl-8.5 pr-8 py-1.5 text-xs font-medium text-zinc-200 focus:outline-none focus:ring-2 focus:ring-blue-500/40 cursor-pointer backdrop-blur-md shadow-[inset_0_1px_1px_rgba(0,0,0,0.5)] transition-all"
+      >
+        <option value="all">{t("filter.category.all")}</option>
+        {categories.map((c) => (
+          <option key={c} value={c} className="bg-zinc-900 text-zinc-200">
+            {c}
+          </option>
+        ))}
+      </select>
+      <ChevronDown className="absolute right-2.5 h-3.5 w-3.5 text-zinc-400 pointer-events-none transition-transform" />
+    </div>
   );
 }

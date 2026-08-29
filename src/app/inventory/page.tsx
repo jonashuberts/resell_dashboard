@@ -25,12 +25,9 @@ export default async function InventoryPage({
   // Get distinct categories as fallback
   const { data: itemsData } = await supabase.from("items").select("category, status");
   
-  // Combine settings with actual data to ensure we have a robust list
   const categoryNames = new Set(catSettings?.map(c => c.name) || []);
   const statusNames = new Set(statSettings?.map(s => s.name) || ["Auf Lager", "Verkauft", "In Reparatur"]);
   
-  // We don't add all item categories to categoryNames anymore so deleted ones disappear from the dropdown
-  // But we still want to make sure 'Keine Kategorie' is selectable if some items have it
   const hasUncategorized = itemsData?.some(i => i.category === 'Keine Kategorie' || !i.category);
   if (hasUncategorized) {
     categoryNames.add('Keine Kategorie');
@@ -75,74 +72,92 @@ export default async function InventoryPage({
   const queryString = queryParams.toString();
 
   return (
-    <div className="p-8">
-      <div className="mb-8 flex items-center justify-between">
+    <div className="p-6 sm:p-10 max-w-7xl mx-auto space-y-8">
+      {/* Header bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-white/[0.06]">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight text-white flex items-center gap-3">
-            <Package className="h-8 w-8 text-blue-500" />
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
+            <Package className="h-7 w-7 text-blue-500" />
             <Translate tKey="inventory.title" />
-          </h2>
-          <p className="text-zinc-400 mt-1"><Translate tKey="inventory.desc" /></p>
+          </h1>
+          <p className="text-xs sm:text-sm text-zinc-400 mt-1 font-normal tracking-tight">
+            <Translate tKey="inventory.desc" />
+          </p>
         </div>
         <div className="flex items-center gap-3">
-          <Link href={`/inventory/new${queryString ? `?${queryString}` : ''}`} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2">
+          <Link 
+            href={`/inventory/new${queryString ? `?${queryString}` : ''}`} 
+            className="apple-button-primary text-white px-4 py-2.5 rounded-xl text-xs font-medium flex items-center gap-2"
+          >
             <Plus className="h-4 w-4" />
             <Translate tKey="inventory.newItem" />
           </Link>
         </div>
       </div>
 
-      <div className="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-sm">
-        <div className="p-4 border-b border-zinc-800 flex flex-wrap items-center gap-4">
+      {/* Main Table Card (Apple Grouped Inset style) */}
+      <div className="apple-card overflow-hidden shadow-2xl relative">
+        <div className="apple-card-glow" />
+        
+        {/* Filter Toolbar */}
+        <div className="p-4 sm:p-5 border-b border-white/[0.08] bg-zinc-950/40">
           <InventoryFilters categories={categories.sort()} statuses={statuses.sort()} />
         </div>
 
+        {/* Table Container */}
         <div className="overflow-x-auto">
-          <table className="w-full text-sm text-left">
-            <thead className="text-xs text-zinc-400 uppercase bg-zinc-900/50 border-b border-zinc-800">
-              <tr>
-                <th className="px-6 py-4 font-medium"><Translate tKey="inventory.table.name" /></th>
-                <th className="px-6 py-4 font-medium"><Translate tKey="inventory.table.category" /></th>
-                <th className="px-6 py-4 font-medium"><Translate tKey="inventory.table.status" /></th>
-                <th className="px-6 py-4 font-medium text-right"><Translate tKey="inventory.table.actions" /></th>
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-white/[0.06] bg-zinc-950/70 text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
+                <th className="px-6 py-3.5"><Translate tKey="inventory.table.name" /></th>
+                <th className="px-6 py-3.5"><Translate tKey="inventory.table.category" /></th>
+                <th className="px-6 py-3.5"><Translate tKey="inventory.table.status" /></th>
+                <th className="px-6 py-3.5 text-right"><Translate tKey="inventory.table.actions" /></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800">
+            <tbody className="divide-y divide-white/[0.04]">
               {items?.map((item) => {
                 const isSold = item.status.includes("Verkauft") || item.status.includes("Versendet") || item.status.includes("Angekommen") || item.status.includes("Reklamation");
                 
                 return (
-                  <tr key={item.id} className="hover:bg-zinc-900/50 transition-colors group">
-                    <td className="px-6 py-4 font-medium text-zinc-100">
-                      {item.name}
+                  <tr key={item.id} className="hover:bg-white/[0.03] transition-colors group">
+                    <td className="px-6 py-4">
+                      <div className="font-medium text-xs sm:text-sm text-zinc-100 group-hover:text-white transition-colors">
+                        {item.name}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${catColorMap[item.category] || 'bg-zinc-800 text-zinc-300'}`}>
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${catColorMap[item.category] || 'bg-zinc-800/80 text-zinc-300 border border-white/[0.08]'}`}>
                         {item.category}
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statColorMap[item.status] || 'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20'}`}>
+                      <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-medium ${statColorMap[item.status] || 'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20'}`}>
                         {item.status}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <Link href={`/inventory/${item.id}/edit${queryString ? `?${queryString}` : ''}`} className="text-zinc-400 hover:text-white font-medium text-xs opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Translate tKey="inventory.table.details" />
-                      </Link>
-                      {!isSold && (
-                        <>
-                          <span className="text-zinc-700 mx-2 opacity-0 group-hover:opacity-100">|</span>
+                      <div className="flex items-center justify-end gap-2">
+                        <Link 
+                          href={`/inventory/${item.id}/edit${queryString ? `?${queryString}` : ''}`} 
+                          className="px-2.5 py-1 rounded-lg text-xs font-medium text-zinc-400 hover:text-white hover:bg-white/[0.08] transition-all"
+                        >
+                          <Translate tKey="inventory.table.details" />
+                        </Link>
+                        {!isSold && (
                           <SellButton item={{ id: item.id, name: item.name, status: item.status }} />
-                        </>
-                      )}
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
               })}
               {!items?.length && (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-zinc-500">
+                  <td colSpan={4} className="px-6 py-16 text-center text-xs text-zinc-500">
+                    <div className="h-10 w-10 mx-auto mb-2 rounded-full bg-zinc-900 flex items-center justify-center border border-white/[0.06] text-lg">
+                      📦
+                    </div>
                     <Translate tKey="inventory.table.empty" />
                   </td>
                 </tr>

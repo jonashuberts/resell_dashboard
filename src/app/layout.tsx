@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/components/LanguageContext";
 import { LayoutWrapper } from "@/components/LayoutWrapper";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Resell Dashboard",
@@ -18,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="de" className="dark" suppressHydrationWarning>
-      <body className={`${inter.className} bg-zinc-950 text-zinc-100 antialiased`}>
+      <body className="bg-[#050507] text-zinc-100 antialiased font-sans">
         <LanguageProvider>
           <div className="flex h-screen overflow-hidden">
             <LayoutWrapper>

@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Download, Loader2 } from "lucide-react";
+import { Download, Loader2, Database } from "lucide-react";
+import { motion } from "motion/react";
 import { useLanguage } from "./LanguageContext";
 import { supabase } from "@/lib/supabase";
 
@@ -62,7 +63,6 @@ export function DataExportSettings() {
 
       const dateStr = new Date().toISOString().split('T')[0];
       downloadFile(itemsCsv, `resell_items_backup_${dateStr}.csv`);
-      // Small timeout to allow the browser to process the first download properly
       setTimeout(() => {
         downloadFile(txCsv, `resell_transactions_backup_${dateStr}.csv`);
         setIsExporting(false);
@@ -76,33 +76,38 @@ export function DataExportSettings() {
   }
 
   return (
-    <div className="bg-zinc-950 border border-zinc-800 rounded-xl p-6 shadow-sm">
-      <div className="flex items-center gap-3 mb-4">
-        <Download className="h-5 w-5 text-zinc-400" />
-        <h3 className="text-lg font-medium text-white">{t("settings.export.title")}</h3>
-      </div>
-      
-      <p className="text-sm text-zinc-400 mb-6">
-        {t("settings.export.desc")}
-      </p>
+    <div className="apple-card p-6 sm:p-7 relative overflow-hidden shadow-xl md:col-span-2">
+      <div className="apple-card-glow" />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+        <div className="flex items-start gap-3.5">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400">
+            <Database className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-sm font-semibold text-white tracking-tight">{t("settings.export.title")}</h3>
+            <p className="text-xs text-zinc-400 font-normal mt-0.5 max-w-xl">{t("settings.export.desc")}</p>
+          </div>
+        </div>
 
-      <button
-        onClick={handleExport}
-        disabled={isExporting}
-        className="w-full bg-zinc-900 border border-zinc-800 hover:bg-zinc-800 hover:border-zinc-700 disabled:opacity-50 disabled:cursor-not-allowed text-zinc-100 px-4 py-3 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2"
-      >
-        {isExporting ? (
-           <>
-             <Loader2 className="h-4 w-4 animate-spin text-zinc-400" />
-             {t("settings.export.loading")}
-           </>
-        ) : (
-           <>
-             <Download className="h-4 w-4 text-zinc-400" />
-             {t("settings.export.btn")}
-           </>
-        )}
-      </button>
+        <motion.button
+          whileTap={{ scale: 0.97 }}
+          onClick={handleExport}
+          disabled={isExporting}
+          className="apple-button-secondary px-5 py-2.5 rounded-xl text-xs font-medium flex items-center justify-center gap-2 shrink-0 disabled:opacity-50"
+        >
+          {isExporting ? (
+             <>
+               <Loader2 className="h-3.5 w-3.5 animate-spin text-zinc-400" />
+               {t("settings.export.loading")}
+             </>
+          ) : (
+             <>
+               <Download className="h-3.5 w-3.5 text-zinc-300" />
+               {t("settings.export.btn")}
+             </>
+          )}
+        </motion.button>
+      </div>
     </div>
   );
 }

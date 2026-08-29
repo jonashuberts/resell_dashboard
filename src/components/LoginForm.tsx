@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createBrowserClient } from "@/lib/supabase-browser";
 import { Mail, Lock, Loader2, AlertCircle } from "lucide-react";
+import { motion } from "motion/react";
 import { useLanguage } from "./LanguageContext";
 
 export function LoginForm() {
@@ -32,7 +33,7 @@ export function LoginForm() {
       }
 
       router.push("/");
-      router.refresh(); // Refresh to update server components with new session
+      router.refresh();
     } catch (err: any) {
       console.error(err);
       setError(err.message || t("auth.login.error"));
@@ -42,55 +43,56 @@ export function LoginForm() {
   };
 
   return (
-    <form onSubmit={handleLogin} className="space-y-5">
+    <form onSubmit={handleLogin} className="space-y-4">
       {error && (
-        <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-3 rounded-lg text-sm flex items-start gap-2">
+        <div className="bg-rose-500/10 border border-rose-500/25 text-rose-400 p-3 rounded-xl text-xs flex items-start gap-2">
           <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-zinc-300 ml-1">{t("auth.login.email")}</label>
+        <label className="text-xs font-medium text-zinc-300 ml-1">{t("auth.login.email")}</label>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
+          <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
           <input
             type="email"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
+            className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl py-2.5 pl-9.5 pr-4 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
             placeholder="mail@example.com"
           />
         </div>
       </div>
 
       <div className="space-y-1.5">
-        <label className="text-sm font-medium text-zinc-300 ml-1">{t("auth.login.password")}</label>
+        <label className="text-xs font-medium text-zinc-300 ml-1">{t("auth.login.password")}</label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-500" />
+          <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
           <input
             type="password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full bg-zinc-950 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-shadow"
+            className="w-full bg-zinc-900/80 border border-white/[0.08] rounded-xl py-2.5 pl-9.5 pr-4 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all"
             placeholder="••••••••"
           />
         </div>
       </div>
 
-      <button
+      <motion.button
+        whileTap={{ scale: 0.97 }}
         type="submit"
         disabled={isLoading || !email || !password}
-        className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed text-white font-medium py-2.5 rounded-xl mt-2 transition-colors flex items-center justify-center gap-2"
+        className="apple-button-primary w-full text-white font-medium py-2.5 rounded-xl text-xs mt-3 flex items-center justify-center gap-2 disabled:opacity-50"
       >
         {isLoading ? (
-          <Loader2 className="w-5 h-5 animate-spin" />
+          <Loader2 className="w-4 h-4 animate-spin" />
         ) : (
           t("auth.login.submit")
         )}
-      </button>
+      </motion.button>
     </form>
   );
 }

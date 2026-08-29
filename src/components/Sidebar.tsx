@@ -3,7 +3,17 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Package, ArrowRightLeft, Settings, ChevronLeft, ChevronRight, LogOut } from "lucide-react";
+import { 
+  LayoutDashboard, 
+  Package, 
+  ArrowRightLeft, 
+  Settings, 
+  ChevronLeft, 
+  ChevronRight, 
+  LogOut,
+  Sparkles
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 import { useLanguage } from "@/components/LanguageContext";
 import { createBrowserClient } from "@/lib/supabase-browser";
 
@@ -22,68 +32,144 @@ export function Sidebar() {
   }, []);
 
   return (
-    <div 
-      className={`flex h-screen flex-col bg-zinc-950 text-zinc-100 border-r border-zinc-800 transition-all duration-300 ease-in-out relative ${
-        isOpen ? "w-64" : "w-16 sm:w-20"
-      }`}
+    <motion.aside
+      animate={{ width: isOpen ? 256 : 76 }}
+      transition={{ type: "spring", damping: 30, stiffness: 300, mass: 0.8 }}
+      className="relative z-30 flex h-screen flex-col border-r border-white/[0.08] bg-zinc-950/70 backdrop-blur-2xl text-zinc-200 select-none shadow-[4px_0_24px_rgba(0,0,0,0.3)]"
     >
-      <div className="flex relative h-16 items-center px-4 sm:px-6 border-b border-zinc-800">
-        <h1 className={`text-lg font-bold bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent truncate transition-all ${isOpen ? "opacity-100" : "opacity-0 w-0 hidden"}`}>
-          ResellDash
-        </h1>
-        {!isOpen && (
-          <div className="w-full flex justify-center text-blue-500 font-bold">
-            RD
+      {/* Top Header / Branding */}
+      <div className="flex h-16 items-center px-4.5 border-b border-white/[0.06] justify-between relative overflow-hidden">
+        <Link href="/" className="flex items-center gap-3 group focus:outline-none">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-b from-blue-500 to-blue-600 shadow-[0_2px_10px_rgba(37,99,235,0.4),inset_0_1px_0_rgba(255,255,255,0.3)] border border-white/20 transition-transform group-hover:scale-105 active:scale-95">
+            <Sparkles className="h-4.5 w-4.5 text-white" />
           </div>
-        )}
+
+          <AnimatePresence initial={false}>
+            {isOpen && (
+              <motion.div
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -8 }}
+                transition={{ duration: 0.15 }}
+                className="flex flex-col"
+              >
+                <span className="text-sm font-semibold tracking-tight text-white flex items-center gap-1.5">
+                  ResellDash
+                  <span className="inline-flex items-center px-1.5 py-0.2 text-[10px] font-medium tracking-wide bg-blue-500/15 text-blue-400 border border-blue-500/30 rounded-full">PRO</span>
+                </span>
+                <span className="text-[11px] text-zinc-400 tracking-tight">Studio Suite</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </Link>
       </div>
-      
-      <button 
+
+      {/* Collapse Toggle Button (Apple style floating pill) */}
+      <motion.button 
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="absolute -right-3 top-20 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 rounded-full p-1 shadow-md z-10 transition-colors hidden sm:flex items-center justify-center"
+        className="absolute -right-3 top-20 z-40 hidden sm:flex h-6 w-6 items-center justify-center rounded-full bg-zinc-900 border border-white/20 text-zinc-300 shadow-lg hover:text-white hover:border-white/30 backdrop-blur-md transition-colors"
         title={isOpen ? "Einklappen" : "Ausklappen"}
       >
-        {isOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-      </button>
+        {isOpen ? <ChevronLeft className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
+      </motion.button>
 
-      <nav className="flex-1 space-y-2 p-3 sm:p-4 overflow-x-hidden">
-        <NavItem href="/" icon={<LayoutDashboard className="h-5 w-5 shrink-0" />} label={t("nav.dashboard")} isOpen={isOpen} isActive={pathname === "/"} />
-        <NavItem href="/inventory" icon={<Package className="h-5 w-5 shrink-0" />} label={t("nav.inventory")} isOpen={isOpen} isActive={pathname?.startsWith("/inventory")} />
-        <NavItem href="/transactions" icon={<ArrowRightLeft className="h-5 w-5 shrink-0" />} label={t("nav.transactions")} isOpen={isOpen} isActive={pathname?.startsWith("/transactions")} />
+      {/* Navigation list */}
+      <nav className="flex-1 space-y-1.5 p-3 overflow-x-hidden">
+        <NavItem 
+          href="/" 
+          icon={<LayoutDashboard className="h-4.5 w-4.5 shrink-0" />} 
+          label={t("nav.dashboard")} 
+          isOpen={isOpen} 
+          isActive={pathname === "/"} 
+        />
+        <NavItem 
+          href="/inventory" 
+          icon={<Package className="h-4.5 w-4.5 shrink-0" />} 
+          label={t("nav.inventory")} 
+          isOpen={isOpen} 
+          isActive={pathname?.startsWith("/inventory")} 
+        />
+        <NavItem 
+          href="/transactions" 
+          icon={<ArrowRightLeft className="h-4.5 w-4.5 shrink-0" />} 
+          label={t("nav.transactions")} 
+          isOpen={isOpen} 
+          isActive={pathname?.startsWith("/transactions")} 
+        />
       </nav>
 
-      <div className="p-3 sm:p-4 border-t border-zinc-800 overflow-x-hidden flex flex-col gap-2">
-        <NavItem href="/settings" icon={<Settings className="h-5 w-5 shrink-0" />} label={t("nav.settings")} isOpen={isOpen} isActive={pathname?.startsWith("/settings")} />
-        <button
+      {/* Footer / Settings & Logout */}
+      <div className="p-3 border-t border-white/[0.06] space-y-1.5">
+        <NavItem 
+          href="/settings" 
+          icon={<Settings className="h-4.5 w-4.5 shrink-0" />} 
+          label={t("nav.settings")} 
+          isOpen={isOpen} 
+          isActive={pathname?.startsWith("/settings")} 
+        />
+        <motion.button
+          whileHover={{ x: 2 }}
+          whileTap={{ scale: 0.97 }}
           onClick={async () => {
             await supabase.auth.signOut();
             router.push("/login");
             router.refresh();
           }}
-          className={`flex items-center rounded-lg px-3 py-2.5 transition-colors text-zinc-400 hover:bg-rose-500/10 hover:text-rose-400 ${!isOpen ? "justify-center" : "space-x-3"}`}
+          className={`flex w-full items-center rounded-xl px-3 py-2.5 text-xs font-medium text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all ${
+            !isOpen ? "justify-center" : "space-x-3"
+          }`}
           title={!isOpen ? "Logout" : undefined}
         >
-          <LogOut className="h-5 w-5 shrink-0" />
-          {isOpen && <span className="truncate whitespace-nowrap">Logout</span>}
-        </button>
+          <LogOut className="h-4.5 w-4.5 shrink-0 text-zinc-400 group-hover:text-rose-400 transition-colors" />
+          {isOpen && <span className="truncate">Logout</span>}
+        </motion.button>
       </div>
-    </div>
+    </motion.aside>
   );
 }
 
-function NavItem({ href, icon, label, isOpen, isActive }: { href: string, icon: React.ReactNode, label: string, isOpen: boolean, isActive?: boolean }) {
+function NavItem({ 
+  href, 
+  icon, 
+  label, 
+  isOpen, 
+  isActive 
+}: { 
+  href: string; 
+  icon: React.ReactNode; 
+  label: string; 
+  isOpen: boolean; 
+  isActive?: boolean;
+}) {
   return (
     <Link 
       href={href} 
-      className={`flex items-center rounded-lg px-3 py-2.5 transition-colors ${
-        isActive 
-          ? "bg-blue-600/10 text-blue-400 font-medium" 
-          : "text-zinc-400 hover:bg-zinc-800/50 hover:text-white"
-      } ${!isOpen ? "justify-center" : "space-x-3"}`}
+      className="relative flex items-center rounded-xl px-3 py-2.5 text-xs font-medium transition-colors focus:outline-none group"
       title={!isOpen ? label : undefined}
     >
-      {icon}
-      {isOpen && <span className="truncate whitespace-nowrap">{label}</span>}
+      {/* Sliding background pill indicator */}
+      {isActive && (
+        <motion.div
+          layoutId="sidebarActivePill"
+          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+          className="absolute inset-0 rounded-xl bg-white/[0.09] border border-white/[0.12] shadow-[0_2px_12px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.15)]"
+        />
+      )}
+
+      <motion.div 
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className={`relative z-10 flex items-center ${!isOpen ? "w-full justify-center" : "space-x-3"} ${
+          isActive ? "text-white" : "text-zinc-400 group-hover:text-zinc-200"
+        }`}
+      >
+        <span className={`${isActive ? "text-blue-400 drop-shadow-[0_0_8px_rgba(59,130,246,0.5)]" : "text-zinc-400 group-hover:text-zinc-200"} transition-colors`}>
+          {icon}
+        </span>
+        {isOpen && <span className="truncate tracking-tight">{label}</span>}
+      </motion.div>
     </Link>
   );
 }
