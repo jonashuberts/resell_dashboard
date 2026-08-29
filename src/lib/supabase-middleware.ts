@@ -36,7 +36,7 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getSession()
   const user = session?.user
 
-  const isDemo = request.cookies.get('resell_demo')?.value === 'true'
+  const isDemo = request.cookies.get('resell_demo')?.value === 'true' || request.nextUrl.searchParams.get('demo') === 'true'
 
   if (
     !user &&

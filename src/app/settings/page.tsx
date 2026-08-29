@@ -1,14 +1,46 @@
 import { createClient } from "@/lib/supabase-server";
+import { cookies } from "next/headers";
 import { Settings, AlertCircle } from "lucide-react";
 import { SettingsCategories } from "@/components/SettingsCategories";
 import { SettingsStatuses } from "@/components/SettingsStatuses";
 import { LanguageSettings } from "@/components/LanguageSettings";
 import { DataExportSettings } from "@/components/DataExportSettings";
 import { Translate } from "@/components/Translate";
+import { DEMO_CATEGORIES, DEMO_STATUSES } from "@/lib/demo-data";
 
 export const revalidate = 0;
 
 export default async function SettingsPage() {
+  const cookieStore = await cookies();
+  const isDemo = cookieStore.get("resell_demo")?.value === "true";
+
+  if (isDemo) {
+    return (
+      <div className="p-6 sm:p-10 max-w-5xl mx-auto space-y-8">
+        <div className="pb-2 border-b border-white/[0.06]">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white flex items-center gap-2.5">
+            <Settings className="h-7 w-7 text-zinc-400" />
+            <Translate tKey="settings.title" />
+          </h1>
+          <p className="text-xs sm:text-sm text-zinc-400 mt-1 font-normal tracking-tight">
+            <Translate tKey="settings.desc" />
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          <LanguageSettings />
+          
+          <div className="grid gap-6 md:grid-cols-2 items-start">
+            <SettingsCategories initialCategories={DEMO_CATEGORIES} />
+            <SettingsStatuses initialStatuses={DEMO_STATUSES} />
+          </div>
+
+          <DataExportSettings />
+        </div>
+      </div>
+    );
+  }
+
   const supabase = await createClient();
   const { data: categories, error: catError } = await supabase
     .from("category_settings")

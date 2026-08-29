@@ -1,35 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
   <defs>
-    <linearGradient id="appleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="appGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#3b82f6" />
       <stop offset="50%" stop-color="#4f46e5" />
       <stop offset="100%" stop-color="#1d4ed8" />
     </linearGradient>
     <linearGradient id="specular" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35" />
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3" />
       <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
     </linearGradient>
   </defs>
   
-  <!-- App Squircle -->
-  <rect x="1" y="1" width="30" height="30" rx="7.5" fill="url(#appleGradient)" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1" />
+  <!-- Background Squircle -->
+  <rect x="1" y="1" width="30" height="30" rx="7.5" fill="url(#appGradient)" stroke="rgba(255, 255, 255, 0.25)" stroke-width="1" />
   <rect x="2" y="2" width="28" height="14" rx="6" fill="url(#specular)" />
   
-  <!-- Trending Up Icon -->
-  <path 
-    d="M23 10.5L14.5 19L10.5 15L4.5 21" 
-    fill="none" 
-    stroke="#ffffff" 
-    stroke-width="2.5" 
-    stroke-linecap="round" 
-    stroke-linejoin="round" 
-  />
-  <path 
-    d="M17 10.5H23V16.5" 
-    fill="none" 
-    stroke="#ffffff" 
-    stroke-width="2.5" 
-    stroke-linecap="round" 
-    stroke-linejoin="round" 
-  />
+  <!-- Centered Trending Arrow Icon -->
+  <g transform="translate(4, 4)">
+    <path 
+      d="M22 7L13.5 15.5L8.5 10.5L2 17" 
+      fill="none" 
+      stroke="#ffffff" 
+      stroke-width="2.5" 
+      stroke-linecap="round" 
+      stroke-linejoin="round" 
+    />
+    <path 
+      d="M16 7H22V13" 
+      fill="none" 
+      stroke="#ffffff" 
+      stroke-width="2.5" 
+      stroke-linecap="round" 
+      stroke-linejoin="round" 
+    />
+  </g>
 </svg>

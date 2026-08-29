@@ -16,7 +16,10 @@ export default function LoginPage() {
         
         <div className="mb-7 text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-blue-700 shadow-[0_4px_16px_rgba(37,99,235,0.4),inset_0_1px_0_rgba(255,255,255,0.35)] border border-white/20 mx-auto mb-4">
-            <TrendingUp className="w-6 h-6 text-white drop-shadow-sm stroke-[2.5]" />
+            <svg className="w-6 h-6 text-white drop-shadow-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+              <polyline points="16 7 22 7 22 13" />
+            </svg>
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
             <Translate tKey="auth.login.title" />

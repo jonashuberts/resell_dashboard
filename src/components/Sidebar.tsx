@@ -40,9 +40,11 @@ export function Sidebar() {
       {/* Top Header / Branding */}
       <div className="flex h-16 items-center px-4.5 border-b border-white/[0.06] justify-between relative overflow-hidden">
         <Link href="/" className="flex items-center gap-3 group focus:outline-none">
-          {/* Sleek Apple-inspired App Icon */}
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 via-indigo-600 to-blue-700 shadow-[0_2px_12px_rgba(59,130,246,0.35),inset_0_1px_0_rgba(255,255,255,0.35)] border border-white/20 transition-transform group-hover:scale-105 active:scale-95">
-            <TrendingUp className="h-4.5 w-4.5 text-white drop-shadow-sm stroke-[2.5]" />
+            <svg className="h-4.5 w-4.5 text-white drop-shadow-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17" />
+              <polyline points="16 7 22 7 22 13" />
+            </svg>
           </div>
 
           <AnimatePresence initial={false}>

@@ -5,9 +5,14 @@ import { DEMO_CATEGORIES, DEMO_ITEMS, DEMO_TRANSACTIONS } from "@/lib/demo-data"
 
 export const revalidate = 0;
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   const cookieStore = await cookies();
-  const isDemo = cookieStore.get("resell_demo")?.value === "true";
+  const params = searchParams ? await searchParams : {};
+  const isDemo = cookieStore.get("resell_demo")?.value === "true" || params?.demo === "true";
 
   if (isDemo) {
     const demoCategories = DEMO_CATEGORIES.map((c) => c.name);

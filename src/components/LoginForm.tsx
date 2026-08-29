@@ -176,7 +176,6 @@ export function LoginForm() {
         }}
         className="apple-button-secondary w-full text-zinc-200 hover:text-white font-medium py-2.5 rounded-xl text-xs flex items-center justify-center gap-2"
       >
-        <span className="flex h-2 w-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
         <span>{t("auth.login.demo.btn")}</span>
       </motion.button>
     </form>

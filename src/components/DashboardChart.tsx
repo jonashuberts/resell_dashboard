@@ -117,6 +117,7 @@ export function DashboardChart({ transactions }: { transactions: Transaction[] }
             fillOpacity={1} 
             fill="url(#appleColorRevenue)" 
             strokeWidth={2.5}
+            isAnimationActive={false}
             activeDot={{ r: 5, fill: "#10b981", stroke: "#ffffff", strokeWidth: 2 }}
           />
           <Area 
@@ -127,6 +128,7 @@ export function DashboardChart({ transactions }: { transactions: Transaction[] }
             fillOpacity={1} 
             fill="url(#appleColorExpenses)" 
             strokeWidth={2.5}
+            isAnimationActive={false}
             activeDot={{ r: 5, fill: "#f43f5e", stroke: "#ffffff", strokeWidth: 2 }}
           />
         </AreaChart>
