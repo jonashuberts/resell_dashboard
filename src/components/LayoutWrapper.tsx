@@ -8,7 +8,7 @@ export function LayoutWrapper({ children }: { children: React.ReactNode }) {
   const isLoginPage = pathname === "/login";
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#070709] text-zinc-100 selection:bg-blue-500/30 selection:text-blue-200">
+    <div className="flex h-screen w-full overflow-hidden bg-[#09090b] text-zinc-100 selection:bg-blue-500/30 selection:text-blue-200">
       {/* Ambient background glow for translucent depth */}
       <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
         <div className="absolute -top-[25%] left-[20%] h-[500px] w-[500px] rounded-full bg-blue-600/[0.04] blur-[128px]" />
