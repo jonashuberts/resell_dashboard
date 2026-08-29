@@ -18,6 +18,9 @@ export const translations: Translations = {
   "nav.inventory": { de: "Inventar", en: "Inventory" },
   "nav.transactions": { de: "Transaktionen", en: "Transactions" },
   "nav.settings": { de: "Einstellungen", en: "Settings" },
+  "nav.logout": { de: "Abmelden", en: "Sign Out" },
+  "nav.collapse": { de: "Einklappen", en: "Collapse" },
+  "nav.expand": { de: "Ausklappen", en: "Expand" },
 
   // Auth
   "auth.login.title": { de: "Willkommen zurück", en: "Welcome back" },
@@ -38,6 +41,7 @@ export const translations: Translations = {
 
   // Dashboard
   "dashboard.title": { de: "Dashboard", en: "Dashboard" },
+  "dashboard.desc": { de: "Finanzanalysen und Inventar-Performance im Überblick.", en: "Financial analytics & inventory performance overview." },
   "dashboard.revenue.title": { de: "Gesamteinnahmen", en: "Total Revenue" },
   "dashboard.revenue.trend": { de: "+Einnahmen aus Verkäufen", en: "+Revenue from sales" },
   "dashboard.expenses.title": { de: "Gesamtausgaben", en: "Total Expenses" },
@@ -73,6 +77,7 @@ export const translations: Translations = {
   "dashboard.chart.revenue": { de: "Einnahmen", en: "Revenue" },
   "dashboard.chart.expenses": { de: "Ausgaben", en: "Expenses" },
   "dashboard.cashflow.title": { de: "Cashflow Übersicht", en: "Cashflow Overview" },
+  "dashboard.cashflow.desc": { de: "Einnahmen und Ausgaben im Zeitverlauf.", en: "Income vs. Expenses over time." },
   
   // Filters
   "filter.category.all": { de: "Alle Kategorien", en: "All Categories" },
@@ -82,6 +87,7 @@ export const translations: Translations = {
   "filter.time.month": { de: "Dieser Monat", en: "This Month" },
   "filter.search": { de: "Suchen nach Name...", en: "Search by name..." },
   "filter.status.all": { de: "Alle Status", en: "All Statuses" },
+  "filter.reset": { de: "Filter zurücksetzen ({{count}} Treffer)", en: "Reset filters ({{count}} results)" },
 
   // Sell Button
   "sell.button": { de: "Verkaufen", en: "Sell" },

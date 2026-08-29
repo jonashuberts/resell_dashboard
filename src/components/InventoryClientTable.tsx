@@ -118,7 +118,7 @@ export function InventoryClientTable({
               }}
               className="text-[11px] text-zinc-400 hover:text-white transition-colors underline underline-offset-4"
             >
-              Filter zurücksetzen ({filteredItems.length} Treffer)
+              {t("filter.reset", { count: filteredItems.length })}
             </button>
           )}
         </div>

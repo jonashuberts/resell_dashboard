@@ -11,7 +11,7 @@ import {
   ChevronLeft, 
   ChevronRight, 
   LogOut,
-  Sparkles
+  TrendingUp
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { useLanguage } from "@/components/LanguageContext";
@@ -40,8 +40,9 @@ export function Sidebar() {
       {/* Top Header / Branding */}
       <div className="flex h-16 items-center px-4.5 border-b border-white/[0.06] justify-between relative overflow-hidden">
         <Link href="/" className="flex items-center gap-3 group focus:outline-none">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-b from-blue-500 to-blue-600 shadow-[0_2px_10px_rgba(37,99,235,0.4),inset_0_1px_0_rgba(255,255,255,0.3)] border border-white/20 transition-transform group-hover:scale-105 active:scale-95">
-            <Sparkles className="h-4.5 w-4.5 text-white" />
+          {/* Sleek Apple-inspired App Icon */}
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 via-indigo-600 to-blue-700 shadow-[0_2px_12px_rgba(59,130,246,0.35),inset_0_1px_0_rgba(255,255,255,0.35)] border border-white/20 transition-transform group-hover:scale-105 active:scale-95">
+            <TrendingUp className="h-4.5 w-4.5 text-white drop-shadow-sm stroke-[2.5]" />
           </div>
 
           <AnimatePresence initial={false}>
@@ -51,9 +52,9 @@ export function Sidebar() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -8 }}
                 transition={{ duration: 0.15 }}
-                className="flex flex-col"
+                className="flex flex-col min-w-0"
               >
-                <span className="text-sm font-semibold tracking-tight text-white">
+                <span className="text-sm font-semibold tracking-tight text-white truncate">
                   Resell Dashboard
                 </span>
               </motion.div>
@@ -68,7 +69,7 @@ export function Sidebar() {
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsOpen(!isOpen)}
         className="absolute -right-3 top-20 z-40 hidden sm:flex h-6 w-6 items-center justify-center rounded-full bg-zinc-900 border border-white/20 text-zinc-300 shadow-lg hover:text-white hover:border-white/30 backdrop-blur-md transition-colors"
-        title={isOpen ? "Einklappen" : "Ausklappen"}
+        title={isOpen ? t("nav.collapse") : t("nav.expand")}
       >
         {isOpen ? <ChevronLeft className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
       </motion.button>
@@ -118,10 +119,10 @@ export function Sidebar() {
           className={`flex w-full items-center rounded-xl px-3 py-2.5 text-xs font-medium text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 transition-all ${
             !isOpen ? "justify-center" : "space-x-3"
           }`}
-          title={!isOpen ? "Logout" : undefined}
+          title={!isOpen ? t("nav.logout") : undefined}
         >
           <LogOut className="h-4.5 w-4.5 shrink-0 text-zinc-400 group-hover:text-rose-400 transition-colors" />
-          {isOpen && <span className="truncate">Logout</span>}
+          {isOpen && <span className="truncate">{t("nav.logout")}</span>}
         </motion.button>
       </div>
     </motion.aside>

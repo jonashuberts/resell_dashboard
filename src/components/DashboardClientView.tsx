@@ -218,7 +218,7 @@ export function DashboardClientView({
             {t("dashboard.title")}
           </h1>
           <p className="text-xs sm:text-sm text-zinc-400 mt-1 font-normal tracking-tight">
-            Financial analytics & inventory performance overview
+            {t("dashboard.desc")}
           </p>
         </div>
         
@@ -322,7 +322,7 @@ export function DashboardClientView({
               <h3 className="text-base font-semibold text-white tracking-tight">
                 {t("dashboard.cashflow.title")}
               </h3>
-              <p className="text-xs text-zinc-400 font-normal">Income vs. Expenses over time</p>
+              <p className="text-xs text-zinc-400 font-normal">{t("dashboard.cashflow.desc")}</p>
             </div>
           </div>
         </div>

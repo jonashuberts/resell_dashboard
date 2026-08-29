@@ -1,6 +1,6 @@
 import { LoginForm } from "@/components/LoginForm";
 import { Translate } from "@/components/Translate";
-import { Sparkles } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
 export default function LoginPage() {
   return (
@@ -15,8 +15,8 @@ export default function LoginPage() {
         <div className="apple-card-glow" />
         
         <div className="mb-7 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-b from-blue-500 to-blue-600 shadow-[0_4px_16px_rgba(37,99,235,0.4),inset_0_1px_0_rgba(255,255,255,0.3)] border border-white/20 mx-auto mb-4">
-            <Sparkles className="w-6 h-6 text-white" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-500 via-indigo-600 to-blue-700 shadow-[0_4px_16px_rgba(37,99,235,0.4),inset_0_1px_0_rgba(255,255,255,0.35)] border border-white/20 mx-auto mb-4">
+            <TrendingUp className="w-6 h-6 text-white drop-shadow-sm stroke-[2.5]" />
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
             <Translate tKey="auth.login.title" />

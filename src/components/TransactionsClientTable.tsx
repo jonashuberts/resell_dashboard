@@ -128,7 +128,7 @@ export function TransactionsClientTable({
               }}
               className="text-[11px] text-zinc-400 hover:text-white transition-colors underline underline-offset-4"
             >
-              Filter zurücksetzen ({filteredTransactions.length} Treffer)
+              {t("filter.reset", { count: filteredTransactions.length })}
             </button>
           )}
         </div>
