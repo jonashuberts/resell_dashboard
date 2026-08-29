@@ -53,11 +53,9 @@ export function Sidebar() {
                 transition={{ duration: 0.15 }}
                 className="flex flex-col"
               >
-                <span className="text-sm font-semibold tracking-tight text-white flex items-center gap-1.5">
-                  ResellDash
-                  <span className="inline-flex items-center px-1.5 py-0.2 text-[10px] font-medium tracking-wide bg-blue-500/15 text-blue-400 border border-blue-500/30 rounded-full">PRO</span>
+                <span className="text-sm font-semibold tracking-tight text-white">
+                  Resell Dashboard
                 </span>
-                <span className="text-[11px] text-zinc-400 tracking-tight">Studio Suite</span>
               </motion.div>
             )}
           </AnimatePresence>
